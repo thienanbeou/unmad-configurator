@@ -16,10 +16,13 @@ this program. If not, see <https://www.gnu.org/licenses/>.
 <script lang="ts">
   import { KeyboardEditorKeyboard } from "$lib/components/keyboard-editor"
   import * as KeycodeButton from "$lib/components/keycode-button"
+  import { HMK_AKType } from "$lib/libhmk/advanced-keys"
   import { Keycode } from "$lib/libhmk/keycodes"
   import { numberNullable, stringNullable } from "$lib/utils"
   import { ToggleGroup } from "bits-ui"
   import { remapStateContext } from "../context.svelte"
+  import { getAdvancedKeyMetadata } from "../lib/advanced-keys"
+  import { advancedKeysQueryContext } from "../queries/advanced-keys-query.svelte"
   import { keymapQueryContext } from "../queries/keymap-query.svelte"
 
   const remapState = remapStateContext.get()
@@ -27,6 +30,27 @@ this program. If not, see <https://www.gnu.org/licenses/>.
 
   const keymapQuery = keymapQueryContext.get()
   const { current: keymap } = $derived(keymapQuery.keymap)
+  const { current: advancedKeys } = $derived(
+    advancedKeysQueryContext.get().advancedKeys,
+  )
+
+  // Keys taken over by an advanced key show its icon (the firmware ignores
+  // their keymap entry). Null Bind keys still send their keymap keycode.
+  const advancedKeymap = $derived.by(() => {
+    const map = new Map<string, Keycode>()
+    for (const { layer, key, action } of advancedKeys ?? []) {
+      if (
+        action.type === HMK_AKType.NONE ||
+        action.type === HMK_AKType.NULL_BIND
+      )
+        continue
+      map.set(
+        `${layer}:${key}`,
+        getAdvancedKeyMetadata(action.type).keycodes[0],
+      )
+    }
+    return map
+  })
 </script>
 
 <ToggleGroup.Root
@@ -50,7 +74,8 @@ this program. If not, see <https://www.gnu.org/licenses/>.
           >
             {#snippet child({ props })}
               <KeycodeButton.Root
-                keycode={keymap[layer][key]}
+                keycode={advancedKeymap.get(`${layer}:${key}`) ??
+                  keymap[layer][key]}
                 showTooltip
                 {...props}
               />

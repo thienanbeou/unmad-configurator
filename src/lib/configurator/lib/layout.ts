@@ -18,6 +18,7 @@ import {
   Gamepad2Icon,
   GaugeIcon,
   Grid2x2Icon,
+  LightbulbIcon,
   PencilIcon,
   SettingsIcon,
   SquareChevronUpIcon,
@@ -54,6 +55,8 @@ export const sidebarTabGroups: SidebarTabGroup[] = [
       },
       { label: "Gamepad", value: "gamepad", icon: Gamepad2Icon },
       { label: "Calibration", value: "calibration", icon: CrosshairIcon },
+      // MAD60 HE fork
+      { label: "Lighting", value: "lighting", icon: LightbulbIcon },
     ],
   },
   {

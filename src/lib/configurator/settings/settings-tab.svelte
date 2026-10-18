@@ -61,6 +61,38 @@ this program. If not, see <https://www.gnu.org/licenses/>.
         description="Enable the 8000Hz polling rate for faster response times, but may increase the CPU usage of the host device. Restart the keyboard to apply changes. This setting applies globally across all profiles."
       />
     {/if}
+    <Switch
+      bind:checked={
+        () => options?.wasdSwapEnabled ?? false,
+        (v) =>
+          options &&
+          optionsQuery.set({ data: { ...options, wasdSwapEnabled: v } })
+      }
+      id="wasd-swap"
+      title="WASD Swap"
+      description="Swap W, A, S and D with the arrow keys (stock MAD60 HE switch). The WASD Swap key toggles it too. Applies to all profiles."
+    />
+    <Switch
+      bind:checked={
+        () => options?.guiLockEnabled ?? false,
+        (v) =>
+          options &&
+          optionsQuery.set({ data: { ...options, guiLockEnabled: v } })
+      }
+      id="win-lock"
+      title="Win Lock"
+      description="Block both Windows (GUI) keys, e.g. while gaming (stock MAD60 HE switch). The Win Lock key toggles it too. Applies to all profiles."
+    />
+    <Switch
+      bind:checked={
+        () => options?.nkroDisabled ?? false,
+        (v) =>
+          options && optionsQuery.set({ data: { ...options, nkroDisabled: v } })
+      }
+      id="6kro"
+      title="6KRO Only"
+      description="Report at most 6 keys at once instead of N-key rollover, for BIOS screens or software that mishandles NKRO (stock MAD60 HE switch). The 6KRO/NKRO key toggles it too."
+    />
     <div class="flex flex-col gap-2">
       <div class="grid text-sm text-wrap">
         <span class="font-semibold">Restart Keyboard</span>

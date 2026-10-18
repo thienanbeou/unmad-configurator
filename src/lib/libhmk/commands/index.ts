@@ -49,6 +49,12 @@ export enum HMK_Command {
   GET_MACROS,
   SET_MACROS,
 
+  // MAD60 HE fork: lighting (libhmk src/rgb.c)
+  GET_RGB = 0xe0,
+  SET_RGB,
+  GET_RGB_KEY_COLORS,
+  SET_RGB_KEY_COLORS,
+
   UNKNOWN = 255,
 }
 

@@ -26,6 +26,7 @@ import { calibrationQueryContext } from "./calibration.query.svelte"
 import { gamepadQueryContext } from "./gamepad-query.svelte"
 import { keymapQueryContext } from "./keymap-query.svelte"
 import { optionsQueryContext } from "./options-query.svelte"
+import { rgbQueryContext } from "./rgb-query.svelte"
 import { tickRateQueryContext } from "./tick-rate-query.svelte"
 
 const PROFILE_REFETCH_INTERVAL = 1000
@@ -38,6 +39,7 @@ export class ProfileQuery {
 
   #calibrationQuery = calibrationQueryContext.get()
   #optionsQuery = optionsQueryContext.get()
+  #rgbQuery = rgbQueryContext.get()
   #keymapQuery = keymapQueryContext.get()
   #actuationQuery = actuationQueryContext.get()
   #advancedKeysQuery = advancedKeysQueryContext.get()
@@ -69,6 +71,8 @@ export class ProfileQuery {
     this.#refetchProfile()
     this.#calibrationQuery.calibration.refetch()
     this.#optionsQuery.options.refetch()
+    this.#rgbQuery.rgb.refetch()
+    this.#rgbQuery.keyColors.refetch()
   }
   resetProfile({ profile }: ResetProfileParams) {
     this.#keyboard.resetProfile({ profile })

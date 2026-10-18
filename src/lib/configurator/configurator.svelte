@@ -28,6 +28,7 @@ this program. If not, see <https://www.gnu.org/licenses/>.
   const advancedKeysTab = import("./advanced-keys/advanced-keys-tab.svelte")
   const gamepadTab = import("./gamepad/gamepad-tab.svelte")
   const calibrationTab = import("./calibration/calibration-tab.svelte")
+  const lightingTab = import("./lighting/lighting-tab.svelte")
   const settingsTab = import("./settings/settings-tab.svelte")
 
   // svelte-ignore state_referenced_locally
@@ -76,6 +77,13 @@ this program. If not, see <https://www.gnu.org/licenses/>.
     <Tabs.Content value="calibration">
       {#snippet child({ props })}
         <CalibrationTab {...props} />
+      {/snippet}
+    </Tabs.Content>
+  {/await}
+  {#await lightingTab then { default: LightingTab }}
+    <Tabs.Content value="lighting">
+      {#snippet child({ props })}
+        <LightingTab {...props} />
       {/snippet}
     </Tabs.Content>
   {/await}

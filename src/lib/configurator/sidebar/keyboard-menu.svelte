@@ -65,7 +65,7 @@ this program. If not, see <https://www.gnu.org/licenses/>.
         {#if demo}
           <DropdownMenu.Item class="gap-2 p-2">
             {#snippet child({ props })}
-              <a href="/" {...props}>
+              <a href="#/" {...props}>
                 <LogOutIcon class="size-4" />
                 Exit Demo
               </a>

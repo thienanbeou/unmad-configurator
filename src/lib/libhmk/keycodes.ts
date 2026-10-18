@@ -200,6 +200,11 @@ export enum Keycode {
   SP_PROFILE_NEXT = 0xd3,
   SP_BOOT = 0xd4,
 
+  // MAD60 HE fork: stock switches, each toggles a firmware option bit
+  SP_WASD_SWAP = 0xf0,
+  SP_GUI_LOCK = 0xf1,
+  SP_NKRO_TOGGLE = 0xf2,
+
   XXXXXXX = KC_NO,
   _______ = KC_TRANSPARENT,
   KC_TRNS = KC_TRANSPARENT,
@@ -315,6 +320,7 @@ export enum Keycode {
   AK_TAP_HOLD = 0x103,
   AK_TOGGLE = 0x104,
   AK_MACRO = 0x105,
+  AK_TAP_DANCE = 0x106,
 
   // Gamepad keycodes (for UI only)
   GP_BUTTON_A = 0x200,

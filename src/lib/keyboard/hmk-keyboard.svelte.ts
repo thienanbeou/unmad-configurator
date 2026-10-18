@@ -55,6 +55,12 @@ import {
   resetProfile,
 } from "$lib/libhmk/commands/profile"
 import { reboot } from "$lib/libhmk/commands/reboot"
+import {
+  getRgb,
+  getRgbKeyColors,
+  setRgb,
+  setRgbKeyColors,
+} from "$lib/libhmk/commands/rgb"
 import { getSerial } from "$lib/libhmk/commands/serial"
 import { getTickRate, setTickRate } from "$lib/libhmk/commands/tick-rate"
 import { displayVersion, isWebHIDSSupported } from "$lib/utils"
@@ -77,6 +83,8 @@ import type {
   SetKeymapParams,
   SetMacrosParams,
   SetOptionsParams,
+  SetRgbKeyColorsParams,
+  SetRgbParams,
   SetTickRateParams,
 } from "."
 import { Commander } from "./commander"
@@ -204,6 +212,18 @@ class HMKKeyboard implements Keyboard {
   }
   setMacros(params: SetMacrosParams) {
     return setMacros(this.version, this.commander, params)
+  }
+  getRgb() {
+    return getRgb(this.commander)
+  }
+  setRgb(params: SetRgbParams) {
+    return setRgb(this.commander, params)
+  }
+  getRgbKeyColors() {
+    return getRgbKeyColors(this.commander, this.metadata.numKeys)
+  }
+  setRgbKeyColors(params: SetRgbKeyColorsParams) {
+    return setRgbKeyColors(this.commander, params)
   }
 }
 

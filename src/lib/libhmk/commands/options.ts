@@ -28,13 +28,23 @@ export async function getOptions(commander: Commander): Promise<HMK_Options> {
     xInputEnabled: ((optionsRaw >> 0) & 1) !== 0,
     saveBottomOutThreshold: ((optionsRaw >> 1) & 1) !== 0,
     highPollingRateEnabled: ((optionsRaw >> 2) & 1) !== 0,
+    wasdSwapEnabled: ((optionsRaw >> 3) & 1) !== 0,
+    guiLockEnabled: ((optionsRaw >> 4) & 1) !== 0,
+    nkroDisabled: ((optionsRaw >> 5) & 1) !== 0,
   }
 }
 
 export async function setOptions(
   commander: Commander,
   {
-    data: { xInputEnabled, saveBottomOutThreshold, highPollingRateEnabled },
+    data: {
+      xInputEnabled,
+      saveBottomOutThreshold,
+      highPollingRateEnabled,
+      wasdSwapEnabled,
+      guiLockEnabled,
+      nkroDisabled,
+    },
   }: SetOptionsParams,
 ) {
   await commander.sendCommand({
@@ -42,7 +52,10 @@ export async function setOptions(
     payload: [
       ((xInputEnabled ? 1 : 0) << 0) |
         ((saveBottomOutThreshold ? 1 : 0) << 1) |
-        ((highPollingRateEnabled ? 1 : 0) << 2),
+        ((highPollingRateEnabled ? 1 : 0) << 2) |
+        ((wasdSwapEnabled ? 1 : 0) << 3) |
+        ((guiLockEnabled ? 1 : 0) << 4) |
+        ((nkroDisabled ? 1 : 0) << 5),
     ],
   })
 }

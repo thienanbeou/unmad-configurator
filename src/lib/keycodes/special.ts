@@ -186,6 +186,27 @@ export const specialKeycodeMetadata: KeycodeMetadata[] = [
     webCodes: [],
     category: "Special",
   },
+  {
+    name: "WASD\nSwap",
+    tooltip: "Toggle WASD Swap: W, A, S and D act as the arrow keys and back.",
+    keycode: Keycode.SP_WASD_SWAP,
+    webCodes: [],
+    category: "Special",
+  },
+  {
+    name: "Win\nLock",
+    tooltip: "Toggle Win Lock: block both Windows (GUI) keys.",
+    keycode: Keycode.SP_GUI_LOCK,
+    webCodes: [],
+    category: "Special",
+  },
+  {
+    name: "6KRO\nNKRO",
+    tooltip: "Toggle between N-key rollover and 6KRO only.",
+    keycode: Keycode.SP_NKRO_TOGGLE,
+    webCodes: [],
+    category: "Special",
+  },
 ]
 
 export function getSpecialKeycodes(numLayers: number) {
@@ -210,5 +231,8 @@ export function getSpecialKeycodes(numLayers: number) {
     ...[...Array(numLayers)].map((_, i) => MO(i)),
     Keycode.SP_LAYER_LOCK,
     Keycode.SP_BOOT,
+    Keycode.SP_WASD_SWAP,
+    Keycode.SP_GUI_LOCK,
+    Keycode.SP_NKRO_TOGGLE,
   ]
 }

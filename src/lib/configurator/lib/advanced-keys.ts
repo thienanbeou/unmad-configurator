@@ -21,6 +21,7 @@ import {
   FileQuestionMarkIcon,
   LayersIcon,
   LayoutTemplateIcon,
+  MousePointerClickIcon,
   MoveHorizontalIcon,
   ToggleLeftIcon,
   WorkflowIcon,
@@ -35,6 +36,8 @@ import {
   HMK_AKType,
   HMK_DKSAction,
   HMK_NullBindBehavior,
+  HMK_TAP_DANCE_ACTION_COUNT,
+  HMK_TapDanceAction,
   type HMK_AdvancedKey,
 } from "$lib/libhmk/advanced-keys"
 import { Keycode } from "$lib/libhmk/keycodes"
@@ -102,7 +105,66 @@ export const advancedKeyMetadata: AdvancedKeyMetadata[] = [
     keycodes: [Keycode.AK_MACRO],
     feature: "advancedKeyMacro",
   },
+  {
+    type: HMK_AKType.TAP_DANCE,
+    icon: MousePointerClickIcon,
+    title: "Tap Dance",
+    description:
+      "Run different actions for a tap, a hold, a double tap, or a tap then hold. Each action is a macro, so it can be one key or a sequence.",
+    numKeys: 1,
+    keycodes: [Keycode.AK_TAP_DANCE],
+  },
 ]
+
+export type TapDanceActionMetadata = {
+  action: HMK_TapDanceAction
+  title: string
+  description: string
+}
+
+// The four tap dance actions (Vial's on tap / on hold / on double tap / on
+// tap + hold)
+export const tapDanceActionMetadata: TapDanceActionMetadata[] = [
+  {
+    action: HMK_TapDanceAction.TAP,
+    title: "Tap",
+    description: "Pressed and released once within the tapping term.",
+  },
+  {
+    action: HMK_TapDanceAction.HOLD,
+    title: "Hold",
+    description:
+      "Held past the tapping term. When unset, the Tap action is held instead.",
+  },
+  {
+    action: HMK_TapDanceAction.DOUBLE_TAP,
+    title: "Double tap",
+    description:
+      "Tapped twice, each tap within the tapping term of the previous one. When unset, Tap runs twice.",
+  },
+  {
+    action: HMK_TapDanceAction.TAP_HOLD,
+    title: "Tap then hold",
+    description:
+      "Tapped once, then pressed again and held. When unset, Tap runs and then Hold.",
+  },
+]
+
+/**
+ * Macro chains an advanced key owns (Macro and Tap Dance keys)
+ */
+export function getAdvancedKeyMacroHeads({
+  action,
+}: HMK_AdvancedKey): number[] {
+  switch (action.type) {
+    case HMK_AKType.MACRO:
+      return [action.head]
+    case HMK_AKType.TAP_DANCE:
+      return action.actions
+    default:
+      return []
+  }
+}
 
 export function getAdvancedKeyMetadata(type: HMK_AKType): AdvancedKeyMetadata {
   const metadata = advancedKeyMetadata.find((m) => m.type === type)
@@ -194,6 +256,16 @@ export function createAdvancedKey(
         action: {
           type,
           head: HMK_MACRO_NODE_NONE,
+        },
+      }
+    case HMK_AKType.TAP_DANCE:
+      return {
+        layer,
+        key: keys[0],
+        action: {
+          type,
+          actions: Array(HMK_TAP_DANCE_ACTION_COUNT).fill(HMK_MACRO_NODE_NONE),
+          tappingTerm: DEFAULT_TAPPING_TERM,
         },
       }
     default:
@@ -338,10 +410,8 @@ export function findEmptyMacroNode(
   advancedKeys: HMK_AdvancedKey[],
 ) {
   const visited = Array(macros.length).fill(false)
-  for (const { action } of advancedKeys) {
-    if (action.type !== HMK_AKType.MACRO) continue
-
-    let head = action.head
+  // Tap Dance actions are macro chains too: their nodes are not free
+  for (let head of advancedKeys.flatMap(getAdvancedKeyMacroHeads)) {
     while (
       head < macros.length &&
       head !== HMK_MACRO_NODE_NONE &&

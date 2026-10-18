@@ -27,6 +27,7 @@ this program. If not, see <https://www.gnu.org/licenses/>.
     getAdvancedKeyMetadata,
     getMacroSequence,
     getNullBindBehaviorMetadata,
+    tapDanceActionMetadata,
   } from "../lib/advanced-keys"
   import { keymapQueryContext } from "../queries/keymap-query.svelte"
   import { macrosQueryContext } from "../queries/macros-query.svelte"
@@ -76,6 +77,19 @@ this program. If not, see <https://www.gnu.org/licenses/>.
         return []
     }
   })
+  // Tap Dance: the keys of each action that is set, with its name
+  const tapDanceGroups = $derived(
+    action.type !== HMK_AKType.TAP_DANCE || macros === undefined
+      ? []
+      : tapDanceActionMetadata
+          .map(({ action: i, title }) => ({
+            title,
+            keycodes: getMacroSequence(macros, action.actions[i]).map(
+              (id) => macros[id].keycode,
+            ),
+          }))
+          .filter(({ keycodes }) => keycodes.length > 0),
+  )
 </script>
 
 <div
@@ -104,7 +118,25 @@ this program. If not, see <https://www.gnu.org/licenses/>.
     <div class="grid aspect-square place-items-center">
       <Icon class="size-6" />
     </div>
-    {#if typeof display === "string"}
+    {#if action.type === HMK_AKType.TAP_DANCE}
+      {#each tapDanceGroups as { title, keycodes } (title)}
+        <div class="flex items-center gap-1 text-xs">
+          <span class="text-muted-foreground">{title}</span>
+          {#each keycodes as keycode, i (i)}
+            <div class="p-0.5" style={unitToStyle()}>
+              <KeycodeButton.Root {keycode}>
+                {#snippet child({ props: { children, ...props } })}
+                  <div {...props}>{@render (children as Snippet)?.()}</div>
+                {/snippet}
+              </KeycodeButton.Root>
+            </div>
+          {/each}
+        </div>
+      {/each}
+      <div class="flex items-center text-xs text-muted-foreground">
+        {action.tappingTerm}ms
+      </div>
+    {:else if typeof display === "string"}
       <div class="flex items-center text-sm font-medium">
         {display}
       </div>

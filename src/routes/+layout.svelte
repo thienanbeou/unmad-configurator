@@ -29,16 +29,16 @@ this program. If not, see <https://www.gnu.org/licenses/>.
     name="description"
     content="A web-based configurator for libhmk keyboards"
   />
-  <link rel="icon" href="/favicon.ico" type="image/x-icon" sizes="48x48" />
-  <link rel="icon" href="/icon0.svg" type="image/svg+xml" sizes="any" />
-  <link rel="icon" href="/icon1.png" type="image/png" sizes="96x96" />
+  <link rel="icon" href="./favicon.ico" type="image/x-icon" sizes="48x48" />
+  <link rel="icon" href="./icon0.svg" type="image/svg+xml" sizes="any" />
+  <link rel="icon" href="./icon1.png" type="image/png" sizes="96x96" />
   <link
     rel="apple-touch-icon"
-    href="/apple-icon.png"
+    href="./apple-icon.png"
     type="image/png"
     sizes="180x180"
   />
-  <link rel="manifest" href="/manifest.json" />
+  <link rel="manifest" href="./manifest.json" />
 </svelte:head>
 
 <ModeWatcher />

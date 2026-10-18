@@ -23,6 +23,7 @@ import {
 } from "$lib/libhmk/advanced-keys"
 import { HMK_GamepadButton, type HMK_GamepadOptions } from "$lib/libhmk/gamepad"
 import { defaultMacroNode, type HMK_MacroNode } from "$lib/libhmk/macro"
+import type { HMK_RgbColor, HMK_RgbConfig } from "$lib/libhmk/rgb"
 import type {
   DuplicateProfileParams,
   GetActuationMapParams,
@@ -41,6 +42,8 @@ import type {
   SetKeymapParams,
   SetMacrosParams,
   SetOptionsParams,
+  SetRgbKeyColorsParams,
+  SetRgbParams,
   SetTickRateParams,
 } from "."
 import { demoMetadata } from "./metadata"
@@ -85,6 +88,8 @@ function defaultProfile(profile: number): DemoKeyboardProfileState {
 type DemoKeyboardState = {
   options: HMK_Options
   profiles: DemoKeyboardProfileState[]
+  rgb: HMK_RgbConfig
+  rgbKeyColors: HMK_RgbColor[]
 }
 
 export class DemoKeyboard implements Keyboard {
@@ -98,10 +103,16 @@ export class DemoKeyboard implements Keyboard {
       xInputEnabled: true,
       saveBottomOutThreshold: true,
       highPollingRateEnabled: true,
+      wasdSwapEnabled: false,
+      guiLockEnabled: false,
+      nkroDisabled: false,
     },
     profiles: [...Array(numProfiles)].map((_, i) =>
       structuredClone(defaultProfile(i)),
     ),
+    // MAD60 HE fork defaults (Rainbow Pinwheels)
+    rgb: { effect: 13, hue: 0, sat: 255, val: 210, speed: 70, hueRange: 255 },
+    rgbKeyColors: [...Array(numKeys)].map((): HMK_RgbColor => [0, 0, 0]),
   }
 
   async disconnect() {}
@@ -192,6 +203,20 @@ export class DemoKeyboard implements Keyboard {
   async setMacros({ profile, offset, data }: SetMacrosParams) {
     for (let i = 0; i < data.length; i++) {
       this.#state.profiles[profile].macros[offset + i] = data[i]
+    }
+  }
+  async getRgb() {
+    return { ...this.#state.rgb, numEffects: 21, maxBrightness: 255 }
+  }
+  async setRgb({ data }: SetRgbParams) {
+    this.#state.rgb = data
+  }
+  async getRgbKeyColors() {
+    return structuredClone(this.#state.rgbKeyColors)
+  }
+  async setRgbKeyColors({ offset, data }: SetRgbKeyColorsParams) {
+    for (let i = 0; i < data.length; i++) {
+      this.#state.rgbKeyColors[offset + i] = data[i]
     }
   }
 }

@@ -23,7 +23,11 @@ import type { Commander } from "$lib/keyboard/commander"
 import type { KeyboardMetadata } from "$lib/keyboard/metadata"
 import { isFeatureAvailable } from "$lib/utils"
 import { HMK_Command } from "."
-import { HMK_AKType, type HMK_AdvancedKey } from "../advanced-keys"
+import {
+  HMK_AKType,
+  HMK_TAP_DANCE_ACTION_COUNT,
+  type HMK_AdvancedKey,
+} from "../advanced-keys"
 
 function getAdvancedKeySize(
   firmwareVersion: number,
@@ -40,6 +44,7 @@ function getAdvancedKeySize(
         5, // Tap-Hold
         3, // Toggle
         isFeatureAvailable("advancedKeyMacro", firmwareVersion) ? 1 : 0, // Macro
+        6, // Tap Dance (MAD60 HE fork): 4 macro heads + u16 tapping term
       )
     )
   }
@@ -154,6 +159,19 @@ export async function getAdvancedKeys(
           },
         })
         break
+      case HMK_AKType.TAP_DANCE:
+        ret.push({
+          layer,
+          key,
+          action: {
+            type,
+            actions: [...Array(HMK_TAP_DANCE_ACTION_COUNT)].map(() =>
+              reader.uint8(),
+            ),
+            tappingTerm: reader.uint16(),
+          },
+        })
+        break
       case HMK_AKType.NONE:
       default:
         ret.push({ layer, key, action: { type } })
@@ -205,6 +223,9 @@ export async function setAdvancedKeys(
         break
       case HMK_AKType.MACRO:
         current.push(action.head)
+        break
+      case HMK_AKType.TAP_DANCE:
+        current.push(...action.actions, ...uint16ToUInt8s(action.tappingTerm))
         break
       case HMK_AKType.NONE:
       default:

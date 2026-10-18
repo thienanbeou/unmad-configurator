@@ -50,6 +50,10 @@ export const hmkOptionsSchema = z.object({
   xInputEnabled: z.boolean(),
   saveBottomOutThreshold: z.boolean(),
   highPollingRateEnabled: z.boolean(),
+  // MAD60 HE fork: stock switches (firmware option bits 3-5)
+  wasdSwapEnabled: z.boolean(),
+  guiLockEnabled: z.boolean(),
+  nkroDisabled: z.boolean(),
 })
 
 export type HMK_Options = z.infer<typeof hmkOptionsSchema>

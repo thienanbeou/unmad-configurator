@@ -30,6 +30,8 @@ export enum HMK_AKType {
   TAP_HOLD,
   TOGGLE,
   MACRO,
+  // MAD60 HE fork (libhmk AK_TYPE_TAP_DANCE)
+  TAP_DANCE,
 }
 
 export const hmkAKNoneSchema = z.object({
@@ -106,6 +108,26 @@ export const hmkAKMacroSchema = z.object({
 
 export type HMK_AKMacro = z.infer<typeof hmkAKMacroSchema>
 
+// Tap Dance actions, in the order the firmware stores them. Each action is a
+// macro chain (head node index, HMK_MACRO_NODE_NONE when unset); trailing
+// Press steps stay held while the key is held.
+export enum HMK_TapDanceAction {
+  TAP = 0,
+  HOLD,
+  DOUBLE_TAP,
+  TAP_HOLD,
+}
+
+export const HMK_TAP_DANCE_ACTION_COUNT = 4
+
+export const hmkAKTapDanceSchema = z.object({
+  type: z.literal(HMK_AKType.TAP_DANCE),
+  actions: z.array(uint8Schema).length(HMK_TAP_DANCE_ACTION_COUNT),
+  tappingTerm: uint16Schema,
+})
+
+export type HMK_AKTapDance = z.infer<typeof hmkAKTapDanceSchema>
+
 export const hmkAdvancedKeySchema = z.object({
   layer: uint8Schema.max(HMK_MAX_NUM_LAYERS - 1),
   key: uint8Schema.max(HMK_MAX_NUM_KEYS - 1),
@@ -116,6 +138,7 @@ export const hmkAdvancedKeySchema = z.object({
     hmkAKTapHoldSchema,
     hmkAKToggleSchema,
     hmkAKMacroSchema,
+    hmkAKTapDanceSchema,
   ]),
 })
 

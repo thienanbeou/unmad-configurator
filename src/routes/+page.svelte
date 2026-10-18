@@ -61,7 +61,7 @@ this program. If not, see <https://www.gnu.org/licenses/>.
           <Button onclick={() => handleConnect()} size="lg">
             <CableIcon /> Connect Keyboard
           </Button>
-          <Button href="/demo" size="lg" variant="outline">
+          <Button href="#/demo" size="lg" variant="outline">
             <ShapesIcon /> Try Demo
           </Button>
         </div>

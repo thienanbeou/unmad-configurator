@@ -19,6 +19,7 @@ import type { HMK_AdvancedKey } from "$lib/libhmk/advanced-keys"
 import type { HMK_AnalogInfo } from "$lib/libhmk/commands"
 import type { HMK_GamepadOptions } from "$lib/libhmk/gamepad"
 import type { HMK_MacroNode } from "$lib/libhmk/macro"
+import type { HMK_RgbColor, HMK_RgbConfig, HMK_RgbInfo } from "$lib/libhmk/rgb"
 import { Context } from "runed"
 import type { KeyboardMetadata } from "./metadata"
 
@@ -52,6 +53,8 @@ export type SetMacrosParams = SetProfileArrayParams<HMK_MacroNode>
 
 export type GetGamepadButtonsParams = GetProfileParams
 export type SetGamepadButtonsParams = SetProfileArrayParams<number>
+export type SetRgbParams = SetParams<HMK_RgbConfig>
+export type SetRgbKeyColorsParams = { offset: number; data: HMK_RgbColor[] }
 export type GetGamepadOptionsParams = GetProfileParams
 export type SetGamepadOptionsParams = SetProfileParams<HMK_GamepadOptions>
 
@@ -96,6 +99,11 @@ export type KeyboardAction = {
   setGamepadOptions(params: SetGamepadOptionsParams): Promise<void>
   getMacros(params: GetMacrosParams): Promise<HMK_MacroNode[]>
   setMacros(params: SetMacrosParams): Promise<void>
+  // MAD60 HE fork: lighting (null when the firmware has none)
+  getRgb(): Promise<HMK_RgbInfo | null>
+  setRgb(params: SetRgbParams): Promise<void>
+  getRgbKeyColors(): Promise<HMK_RgbColor[]>
+  setRgbKeyColors(params: SetRgbKeyColorsParams): Promise<void>
 }
 
 export type Keyboard = KeyboardState & KeyboardAction

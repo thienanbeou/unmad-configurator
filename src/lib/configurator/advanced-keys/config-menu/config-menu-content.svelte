@@ -22,6 +22,7 @@ this program. If not, see <https://www.gnu.org/licenses/>.
   import DynamicKeystrokeConfigMenu from "./dynamic-keystroke/dynamic-keystroke-config-menu.svelte"
   import MacroConfigMenu from "./macro/macro-config-menu.svelte"
   import NullBindConfigMenu from "./null-bind/null-bind-config-menu.svelte"
+  import TapDanceConfigMenu from "./tap-dance/tap-dance-config-menu.svelte"
   import TapHoldConfigMenu from "./tap-hold/tap-hold-config-menu.svelte"
   import ToggleConfigMenu from "./toggle/toggle-config-menu.svelte"
 
@@ -60,5 +61,7 @@ this program. If not, see <https://www.gnu.org/licenses/>.
     <ToggleConfigMenu />
   {:else if type === HMK_AKType.MACRO}
     <MacroConfigMenu />
+  {:else if type === HMK_AKType.TAP_DANCE}
+    <TapDanceConfigMenu />
   {/if}
 </div>

@@ -21,7 +21,6 @@ this program. If not, see <https://www.gnu.org/licenses/>.
   import * as ToggleGroupUI from "$lib/components/ui/toggle-group"
   import { macroActions } from "$lib/configurator/lib/advanced-keys"
   import { macrosQueryContext } from "$lib/configurator/queries/macros-query.svelte"
-  import type { HMK_AKMacro } from "$lib/libhmk/advanced-keys"
   import { Keycode } from "$lib/libhmk/keycodes"
   import { HMK_MAX_MACRO_DELAY } from "$lib/libhmk/macro"
   import { unitToStyle } from "$lib/ui"
@@ -35,14 +34,16 @@ this program. If not, see <https://www.gnu.org/licenses/>.
     class: className,
     prevNodeId,
     macroNodeId,
+    setHead,
     ...props
   }: WithoutChild<HTMLAttributes<HTMLDivElement>> & {
     prevNodeId: number | null
     macroNodeId: number
+    // Stores a new first node in the advanced key that owns this chain
+    setHead: (head: number) => Promise<void>
   } = $props()
 
   const configMenuState = configMenuStateContext.get()
-  const action = $derived(configMenuState.advancedKey.action as HMK_AKMacro)
   const { macros } = $derived(configMenuState)
   const macrosQuery = macrosQueryContext.get()
 
@@ -126,7 +127,7 @@ this program. If not, see <https://www.gnu.org/licenses/>.
     <Button
       onclick={() => {
         if (prevNodeId === null) {
-          configMenuState.updateAction({ ...action, head: macroNode.next })
+          setHead(macroNode.next)
         } else {
           macrosQuery.set({
             offset: prevNodeId,

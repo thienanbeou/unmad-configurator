@@ -18,6 +18,7 @@ import {
   ArrowBigRightDashIcon,
   LayersIcon,
   LayoutTemplateIcon,
+  MousePointerClickIcon,
   ToggleLeftIcon,
   WorkflowIcon,
 } from "@lucide/svelte"
@@ -70,6 +71,14 @@ export const advancedKeysKeycodeMetadata: KeycodeMetadata[] = [
     tooltip: "Macro Key",
     display: [WorkflowIcon],
     keycode: Keycode.AK_MACRO,
+    webCodes: [],
+    category: "Advanced Keys",
+  },
+  {
+    name: "Tap Dance",
+    tooltip: "Tap Dance Key",
+    display: [MousePointerClickIcon],
+    keycode: Keycode.AK_TAP_DANCE,
     webCodes: [],
     category: "Advanced Keys",
   },
