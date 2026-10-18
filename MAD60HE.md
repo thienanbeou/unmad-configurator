@@ -8,9 +8,12 @@ https://thienanbeou.github.io/unmad-configurator/.
 
 Fork of [hmkconf](https://github.com/peppapighs/hmkconf) (upstream `main`
 22884ba), branch `unmad`, for the Madlions MAD60 HE running the MAD60 HE
-fork of libhmk (firmware v17 or later, eeconfig v1.7). Works with other
-libhmk keyboards too; the extra tabs hide themselves where the firmware lacks
-the commands.
+fork of libhmk (Unmad firmware v1.0 or later). v1.1 adds Mac mode, the Caps
+Lock indicator and its colour, Grave Escape / Repeat Key and 52 effects; on
+v1.0 the effect list shows only its 21 and the Caps colour controls hide,
+while the Mac Mode and Caps switches still show and do nothing. Works with
+other libhmk keyboards too; the extra tabs hide themselves where the
+firmware lacks the commands.
 
 ## Run
 
@@ -51,17 +54,17 @@ of a tab, which reloads the page once); after that it is fast.
   type was written back as zeros, and new macros were placed on nodes that tap
   dances use (`findEmptyMacroNode` only followed Macro keys).
 - **Lighting** tab (commands 0xE0-0xE3, 0xE7 / 0xE8): all 52 QMK effects
-  (21 before firmware v1.1; names and controls in `rgbEffectMetadata`), brightness (the
-  stock firmware never went above 210; the firmware allows 255), speed, base
-  colour, per-key colours for the Custom effect. Since firmware v17
-  (eeconfig v1.7): "Color range" slider (`hueRange`, GET_RGB byte 8 / SET_RGB
+  (21 before firmware v1.1; names and controls in `rgbEffectMetadata`),
+  brightness (the stock firmware never went above 210; the firmware allows 255), speed, base
+  colour, per-key colours for the Custom effect. "Color range" slider (`hueRange`, GET_RGB byte 8 / SET_RGB
   byte 7) for the rainbow effects, whose colour picker now sets the centre;
   Digital Rain takes the colour too. Slider 0-255, 255 shows "Full rainbow".
   Below full the colours move 2 * range / 255 times as fast as full (the
   firmware's fold); kept on purpose, with the full 0-255 slider. Hidden
   behind "no lighting" on other firmware. Firmware v1.1: Caps Lock indicator
   colour picker and brightness slider (GET/SET_RGB_CAPS 0xE7 / 0xE8, HSV;
-  hidden when the firmware does not answer). `src/lib/libhmk/rgb.ts`, `src/lib/libhmk/commands/rgb.ts`,
+  hidden when the firmware does not answer). `src/lib/libhmk/rgb.ts`,
+  `src/lib/libhmk/commands/rgb.ts`,
   `src/lib/configurator/lighting/lighting-tab.svelte`,
   `src/lib/configurator/queries/rgb-query.svelte.ts`.
 - **Stock switches**: WASD Swap, Win Lock, 6KRO Only in Settings (option bits

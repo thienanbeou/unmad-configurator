@@ -102,7 +102,7 @@ this program. If not, see <https://www.gnu.org/licenses/>.
       }
       id="mac-mode"
       title="Mac Mode"
-      description="Swap Alt and Windows (GUI) on both sides, so the key next to Space is Command on a Mac (the stock Win/Mac switch). The Mac Mode key toggles it too. Applies to all profiles."
+      description="Swap Alt and Windows (GUI) on both sides, so the key next to Space is Command on a Mac (the stock Win/Mac switch). The Mac Mode key toggles it too. Applies to all profiles. Needs firmware v1.1 or later."
     />
     <Switch
       bind:checked={
