@@ -19,9 +19,13 @@ the commands.
     npm run dev          # alternative: http://localhost:5173
 
 Open `build/index.html` in Chrome / Edge / Brave (WebHID; connecting from
-file:// works). The build is one ~1 MB file
-with all JS / CSS / fonts inlined (svelte.config.js: adapter-static 3,
-`bundleStrategy: "inline"`, hash routes `#/demo`). Rebuild after every
+file:// works). The build is one ~1.75 MB file
+with all JS, CSS, fonts and images inlined (svelte.config.js: adapter-static
+3, `bundleStrategy: "inline"`, hash routes `#/demo`; vite.config.ts:
+`assetsInlineLimit`, without which the screenshots and fonts were looked up
+next to index.html and missing). The `_app/` folder the build also writes is
+not needed. GitHub Pages serves `index.html` plus the favicon, icons and
+manifest from the `gh-pages` branch, with `.nojekyll`. Rebuild after every
 source change, the file does not update itself. Internal links are `#/...`
 (path routes like `/demo` no longer exist, also in dev). adapter-static is
 pinned to 3 (4 needs SvelteKit 3); adapter-vercel is unused but still
