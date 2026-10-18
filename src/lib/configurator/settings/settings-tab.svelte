@@ -93,6 +93,28 @@ this program. If not, see <https://www.gnu.org/licenses/>.
       title="6KRO Only"
       description="Report at most 6 keys at once instead of N-key rollover, for BIOS screens or software that mishandles NKRO (stock MAD60 HE switch). The 6KRO/NKRO key toggles it too."
     />
+    <Switch
+      bind:checked={
+        () => options?.macModeEnabled ?? false,
+        (v) =>
+          options &&
+          optionsQuery.set({ data: { ...options, macModeEnabled: v } })
+      }
+      id="mac-mode"
+      title="Mac Mode"
+      description="Swap Alt and Windows (GUI) on both sides, so the key next to Space is Command on a Mac (the stock Win/Mac switch). The Mac Mode key toggles it too. Applies to all profiles."
+    />
+    <Switch
+      bind:checked={
+        () => !(options?.capsIndicatorDisabled ?? false),
+        (v) =>
+          options &&
+          optionsQuery.set({ data: { ...options, capsIndicatorDisabled: !v } })
+      }
+      id="caps-indicator"
+      title="Caps Lock Indicator"
+      description="Light the Caps Lock key white while Caps Lock is on, over any lighting effect. Needs firmware v1.1 or later."
+    />
     <div class="flex flex-col gap-2">
       <div class="grid text-sm text-wrap">
         <span class="font-semibold">Restart Keyboard</span>

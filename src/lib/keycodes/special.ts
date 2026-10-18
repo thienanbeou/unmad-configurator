@@ -207,6 +207,29 @@ export const specialKeycodeMetadata: KeycodeMetadata[] = [
     webCodes: [],
     category: "Special",
   },
+  {
+    name: "Grave\nEsc",
+    tooltip:
+      "Grave Escape: Esc, or ` (grave) while Shift or Win is held. Ctrl + Shift + Esc stays Esc.",
+    keycode: Keycode.SP_GRAVE_ESCAPE,
+    webCodes: [],
+    category: "Special",
+  },
+  {
+    name: "Repeat",
+    tooltip:
+      "Repeat Key: sends the last key again, with the modifiers that were held with it.",
+    keycode: Keycode.SP_REPEAT_KEY,
+    webCodes: [],
+    category: "Special",
+  },
+  {
+    name: "Mac\nMode",
+    tooltip: "Toggle Mac Mode: swap Alt and Windows (GUI) on both sides.",
+    keycode: Keycode.SP_MAC_MODE,
+    webCodes: [],
+    category: "Special",
+  },
 ]
 
 export function getSpecialKeycodes(numLayers: number) {
@@ -234,5 +257,8 @@ export function getSpecialKeycodes(numLayers: number) {
     Keycode.SP_WASD_SWAP,
     Keycode.SP_GUI_LOCK,
     Keycode.SP_NKRO_TOGGLE,
+    Keycode.SP_MAC_MODE,
+    Keycode.SP_GRAVE_ESCAPE,
+    Keycode.SP_REPEAT_KEY,
   ]
 }

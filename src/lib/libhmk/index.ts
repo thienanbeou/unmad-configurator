@@ -54,6 +54,10 @@ export const hmkOptionsSchema = z.object({
   wasdSwapEnabled: z.boolean(),
   guiLockEnabled: z.boolean(),
   nkroDisabled: z.boolean(),
+  // MAD60 HE fork v1.1: Mac mode (Alt / GUI swapped, bit 6) and the Caps Lock
+  // indicator (bit 7, stored inverted: set = indicator off)
+  macModeEnabled: z.boolean(),
+  capsIndicatorDisabled: z.boolean(),
 })
 
 export type HMK_Options = z.infer<typeof hmkOptionsSchema>

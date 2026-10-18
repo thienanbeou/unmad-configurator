@@ -204,6 +204,10 @@ export enum Keycode {
   SP_WASD_SWAP = 0xf0,
   SP_GUI_LOCK = 0xf1,
   SP_NKRO_TOGGLE = 0xf2,
+  // MAD60 HE fork v1.1 (QMK features)
+  SP_GRAVE_ESCAPE = 0xf3,
+  SP_REPEAT_KEY = 0xf4,
+  SP_MAC_MODE = 0xf5,
 
   XXXXXXX = KC_NO,
   _______ = KC_TRANSPARENT,

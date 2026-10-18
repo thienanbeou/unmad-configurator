@@ -31,6 +31,8 @@ export async function getOptions(commander: Commander): Promise<HMK_Options> {
     wasdSwapEnabled: ((optionsRaw >> 3) & 1) !== 0,
     guiLockEnabled: ((optionsRaw >> 4) & 1) !== 0,
     nkroDisabled: ((optionsRaw >> 5) & 1) !== 0,
+    macModeEnabled: ((optionsRaw >> 6) & 1) !== 0,
+    capsIndicatorDisabled: ((optionsRaw >> 7) & 1) !== 0,
   }
 }
 
@@ -44,6 +46,8 @@ export async function setOptions(
       wasdSwapEnabled,
       guiLockEnabled,
       nkroDisabled,
+      macModeEnabled,
+      capsIndicatorDisabled,
     },
   }: SetOptionsParams,
 ) {
@@ -55,7 +59,9 @@ export async function setOptions(
         ((highPollingRateEnabled ? 1 : 0) << 2) |
         ((wasdSwapEnabled ? 1 : 0) << 3) |
         ((guiLockEnabled ? 1 : 0) << 4) |
-        ((nkroDisabled ? 1 : 0) << 5),
+        ((nkroDisabled ? 1 : 0) << 5) |
+        ((macModeEnabled ? 1 : 0) << 6) |
+        ((capsIndicatorDisabled ? 1 : 0) << 7),
     ],
   })
 }

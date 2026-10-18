@@ -106,6 +106,8 @@ export class DemoKeyboard implements Keyboard {
       wasdSwapEnabled: false,
       guiLockEnabled: false,
       nkroDisabled: false,
+      macModeEnabled: false,
+      capsIndicatorDisabled: false,
     },
     profiles: [...Array(numProfiles)].map((_, i) =>
       structuredClone(defaultProfile(i)),
@@ -206,7 +208,7 @@ export class DemoKeyboard implements Keyboard {
     }
   }
   async getRgb() {
-    return { ...this.#state.rgb, numEffects: 21, maxBrightness: 255 }
+    return { ...this.#state.rgb, numEffects: 52, maxBrightness: 255 }
   }
   async setRgb({ data }: SetRgbParams) {
     this.#state.rgb = data
