@@ -13,7 +13,7 @@ You should have received a copy of the GNU General Public License along with
 this program. If not, see <https://www.gnu.org/licenses/>.
 -->
 
-<!-- MAD60 HE fork: lighting (libhmk src/rgb.c, commands 0xE0-0xE3) -->
+<!-- MAD60 HE fork: lighting (libhmk src/rgb.c, commands 0xE0-0xE3, 0xE7-0xE8) -->
 <script lang="ts">
   import AreaSelect from "$lib/components/area-select.svelte"
   import CommitSlider from "$lib/components/commit-slider.svelte"
@@ -48,6 +48,7 @@ this program. If not, see <https://www.gnu.org/licenses/>.
   const rgbQuery = rgbQueryContext.get()
   const { current: rgb } = $derived(rgbQuery.rgb)
   const { current: keyColors } = $derived(rgbQuery.keyColors)
+  const { current: caps } = $derived(rgbQuery.caps)
   const { current: keymap } = $derived(keymapQueryContext.get().keymap)
   const allKeys = $derived(
     displayLayoutContext.get().displayKeys.map(({ key }) => key),
@@ -262,6 +263,44 @@ this program. If not, see <https://www.gnu.org/licenses/>.
               step={1}
               title="Color range"
             />
+            {#if caps}
+              <div class="flex flex-col gap-2">
+                <label class="grid text-sm" for="rgb-caps-color">
+                  <span class="font-medium">Caps Lock Indicator</span>
+                  <span class="text-muted-foreground">
+                    Color of the Caps Lock key while Caps Lock is on, over any
+                    effect. Turn the indicator off in Settings.
+                  </span>
+                </label>
+                <input
+                  id="rgb-caps-color"
+                  class="h-9 w-24 cursor-pointer rounded-md border"
+                  type="color"
+                  value={rgbToHex(hsvToRgb(caps.hue, caps.sat, 255))}
+                  onchange={(e) => {
+                    const [hue, sat] = rgbToHueSat(
+                      hexToRgb(e.currentTarget.value),
+                    )
+                    rgbQuery.setCaps({ data: { ...caps, hue, sat } })
+                  }}
+                />
+              </div>
+              <CommitSlider
+                bind:committed={
+                  () => caps.val,
+                  (v) => rgbQuery.setCaps({ data: { ...caps, val: v } })
+                }
+                description="Brightness of the Caps Lock indicator, separate from the effect's."
+                display={(v) =>
+                  v > HMK_RGB_STOCK_MAX_BRIGHTNESS
+                    ? `${v} (above stock ${HMK_RGB_STOCK_MAX_BRIGHTNESS})`
+                    : String(v)}
+                min={0}
+                max={rgb.maxBrightness}
+                step={1}
+                title="Caps Lock Brightness"
+              />
+            {/if}
             {#if custom}
               <div class="flex flex-col gap-2">
                 <div class="grid text-sm">

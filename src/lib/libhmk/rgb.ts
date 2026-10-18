@@ -36,6 +36,9 @@ export type HMK_RgbInfo = HMK_RgbConfig & {
 // [r, g, b]
 export type HMK_RgbColor = [number, number, number]
 
+// Caps Lock indicator colour in QMK HSV (firmware v1.1 and later)
+export type HMK_RgbCaps = { hue: number; sat: number; val: number }
+
 // The stock MAD60 HE firmware never went above this brightness
 export const HMK_RGB_STOCK_MAX_BRIGHTNESS = 210
 

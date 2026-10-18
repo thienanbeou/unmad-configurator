@@ -50,7 +50,8 @@ of a tab, which reloads the page once); after that it is fast.
 - **Two upstream bugs fixed** that corrupt tap dances: an unknown advanced key
   type was written back as zeros, and new macros were placed on nodes that tap
   dances use (`findEmptyMacroNode` only followed Macro keys).
-- **Lighting** tab (commands 0xE0-0xE3): 21 QMK effects, brightness (the
+- **Lighting** tab (commands 0xE0-0xE3, 0xE7 / 0xE8): all 52 QMK effects
+  (21 before firmware v1.1; names and controls in `rgbEffectMetadata`), brightness (the
   stock firmware never went above 210; the firmware allows 255), speed, base
   colour, per-key colours for the Custom effect. Since firmware v17
   (eeconfig v1.7): "Color range" slider (`hueRange`, GET_RGB byte 8 / SET_RGB
@@ -58,13 +59,18 @@ of a tab, which reloads the page once); after that it is fast.
   Digital Rain takes the colour too. Slider 0-255, 255 shows "Full rainbow".
   Below full the colours move 2 * range / 255 times as fast as full (the
   firmware's fold); kept on purpose, with the full 0-255 slider. Hidden
-  behind "no lighting" on other firmware. `src/lib/libhmk/rgb.ts`, `src/lib/libhmk/commands/rgb.ts`,
+  behind "no lighting" on other firmware. Firmware v1.1: Caps Lock indicator
+  colour picker and brightness slider (GET/SET_RGB_CAPS 0xE7 / 0xE8, HSV;
+  hidden when the firmware does not answer). `src/lib/libhmk/rgb.ts`, `src/lib/libhmk/commands/rgb.ts`,
   `src/lib/configurator/lighting/lighting-tab.svelte`,
   `src/lib/configurator/queries/rgb-query.svelte.ts`.
 - **Stock switches**: WASD Swap, Win Lock, 6KRO Only in Settings (option bits
   3-5) and as keys (`SP_WASD_SWAP` 0xF0, `SP_GUI_LOCK` 0xF1,
-  `SP_NKRO_TOGGLE` 0xF2) in the Special keycodes. Stock hmkconf writes the
-  options from the fields it knows and would clear these bits.
+  `SP_NKRO_TOGGLE` 0xF2) in the Special keycodes. Firmware v1.1 adds Mac
+  Mode (bit 6, `SP_MAC_MODE` 0xF5) and Caps Lock Indicator (bit 7, stored
+  inverted) switches, and the keys Grave Escape (`SP_GRAVE_ESCAPE` 0xF3) and
+  Repeat Key (`SP_REPEAT_KEY` 0xF4). Stock hmkconf writes the options from
+  the fields it knows and would clear these bits.
 - Upstream bug fixed: the advanced key editor header showed "Unknown 0x108"
   (it passed the firmware version instead of the key type).
 - **Remap tab shows advanced keys**: a key taken over by Tap Dance / Macro /

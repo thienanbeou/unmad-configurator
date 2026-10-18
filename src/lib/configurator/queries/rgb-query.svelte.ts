@@ -15,10 +15,11 @@
 
 import {
   keyboardContext,
+  type SetRgbCapsParams,
   type SetRgbKeyColorsParams,
   type SetRgbParams,
 } from "$lib/keyboard"
-import type { HMK_RgbColor, HMK_RgbInfo } from "$lib/libhmk/rgb"
+import type { HMK_RgbCaps, HMK_RgbColor, HMK_RgbInfo } from "$lib/libhmk/rgb"
 import { Context, resource, type ResourceReturn } from "runed"
 import { optimisticUpdate } from "."
 
@@ -26,6 +27,8 @@ import { optimisticUpdate } from "."
 export class RgbQuery {
   rgb: ResourceReturn<HMK_RgbInfo | null>
   keyColors: ResourceReturn<HMK_RgbColor[]>
+  // Caps Lock indicator colour, null when the firmware cannot set it
+  caps: ResourceReturn<HMK_RgbCaps | null>
 
   #keyboard = keyboardContext.get()
 
@@ -40,6 +43,11 @@ export class RgbQuery {
       (supported) =>
         supported ? this.#keyboard.getRgbKeyColors() : Promise.resolve([]),
     )
+    this.caps = resource(
+      () => !!this.rgb.current,
+      (supported) =>
+        supported ? this.#keyboard.getRgbCaps() : Promise.resolve(null),
+    )
   }
 
   async set(params: SetRgbParams) {
@@ -48,6 +56,15 @@ export class RgbQuery {
       resource: this.rgb,
       optimisticFn: (current) => (current ? { ...current, ...data } : current),
       updateFn: () => this.#keyboard.setRgb(params),
+    })
+  }
+
+  async setCaps(params: SetRgbCapsParams) {
+    const { data } = params
+    await optimisticUpdate({
+      resource: this.caps,
+      optimisticFn: (current) => (current ? data : current),
+      updateFn: () => this.#keyboard.setRgbCaps(params),
     })
   }
 

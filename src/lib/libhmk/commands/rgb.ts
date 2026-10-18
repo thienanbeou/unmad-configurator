@@ -13,10 +13,14 @@
  * this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import type { SetRgbKeyColorsParams, SetRgbParams } from "$lib/keyboard"
+import type {
+  SetRgbCapsParams,
+  SetRgbKeyColorsParams,
+  SetRgbParams,
+} from "$lib/keyboard"
 import type { Commander } from "$lib/keyboard/commander"
 import { HMK_Command } from "."
-import type { HMK_RgbColor, HMK_RgbInfo } from "../rgb"
+import type { HMK_RgbCaps, HMK_RgbColor, HMK_RgbInfo } from "../rgb"
 
 // Key colours per packet (63 data bytes / 3)
 const KEY_COLORS_PER_PACKET = 20
@@ -91,4 +95,33 @@ export async function setRgbKeyColors(
       payload: [offset + i, part.length, ...part.flat()],
     })
   }
+}
+
+/**
+ * Caps Lock indicator colour, or null when the firmware cannot set it (older
+ * than v1.1)
+ */
+export async function getRgbCaps(
+  commander: Commander,
+): Promise<HMK_RgbCaps | null> {
+  let view: DataView
+  try {
+    view = await commander.sendCommand({
+      command: HMK_Command.GET_RGB_CAPS,
+      timeout: 1000,
+    })
+  } catch {
+    return null
+  }
+  return { hue: view.getUint8(0), sat: view.getUint8(1), val: view.getUint8(2) }
+}
+
+export async function setRgbCaps(
+  commander: Commander,
+  { data: { hue, sat, val } }: SetRgbCapsParams,
+) {
+  await commander.sendCommand({
+    command: HMK_Command.SET_RGB_CAPS,
+    payload: [hue, sat, val],
+  })
 }

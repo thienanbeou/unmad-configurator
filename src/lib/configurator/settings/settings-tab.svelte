@@ -113,7 +113,7 @@ this program. If not, see <https://www.gnu.org/licenses/>.
       }
       id="caps-indicator"
       title="Caps Lock Indicator"
-      description="Light the Caps Lock key white while Caps Lock is on, over any lighting effect. Needs firmware v1.1 or later."
+      description="Light the Caps Lock key while Caps Lock is on, over any lighting effect. Needs firmware v1.1 or later. Set its color and brightness in the Lighting tab."
     />
     <div class="flex flex-col gap-2">
       <div class="grid text-sm text-wrap">

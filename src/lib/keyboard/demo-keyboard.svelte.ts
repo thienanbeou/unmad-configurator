@@ -23,7 +23,7 @@ import {
 } from "$lib/libhmk/advanced-keys"
 import { HMK_GamepadButton, type HMK_GamepadOptions } from "$lib/libhmk/gamepad"
 import { defaultMacroNode, type HMK_MacroNode } from "$lib/libhmk/macro"
-import type { HMK_RgbColor, HMK_RgbConfig } from "$lib/libhmk/rgb"
+import type { HMK_RgbCaps, HMK_RgbColor, HMK_RgbConfig } from "$lib/libhmk/rgb"
 import type {
   DuplicateProfileParams,
   GetActuationMapParams,
@@ -42,6 +42,7 @@ import type {
   SetKeymapParams,
   SetMacrosParams,
   SetOptionsParams,
+  SetRgbCapsParams,
   SetRgbKeyColorsParams,
   SetRgbParams,
   SetTickRateParams,
@@ -90,6 +91,7 @@ type DemoKeyboardState = {
   profiles: DemoKeyboardProfileState[]
   rgb: HMK_RgbConfig
   rgbKeyColors: HMK_RgbColor[]
+  rgbCaps: HMK_RgbCaps
 }
 
 export class DemoKeyboard implements Keyboard {
@@ -115,6 +117,7 @@ export class DemoKeyboard implements Keyboard {
     // MAD60 HE fork defaults (Rainbow Pinwheels)
     rgb: { effect: 13, hue: 0, sat: 255, val: 210, speed: 70, hueRange: 255 },
     rgbKeyColors: [...Array(numKeys)].map((): HMK_RgbColor => [0, 0, 0]),
+    rgbCaps: { hue: 0, sat: 0, val: 210 },
   }
 
   async disconnect() {}
@@ -215,6 +218,12 @@ export class DemoKeyboard implements Keyboard {
   }
   async getRgbKeyColors() {
     return structuredClone(this.#state.rgbKeyColors)
+  }
+  async getRgbCaps() {
+    return { ...this.#state.rgbCaps }
+  }
+  async setRgbCaps({ data }: SetRgbCapsParams) {
+    this.#state.rgbCaps = data
   }
   async setRgbKeyColors({ offset, data }: SetRgbKeyColorsParams) {
     for (let i = 0; i < data.length; i++) {
