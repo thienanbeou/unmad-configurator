@@ -70,8 +70,8 @@ of a tab, which reloads the page once); after that it is fast.
   hidden when the firmware does not answer; grayed out while the Caps Lock
   Indicator switch in Settings is off). Typing Heatmap's Speed slider sets
   its fade (firmware v1.2; `speedHint` in `rgbEffectMetadata`; v1.1 ignores
-  it). White Balance (firmware v1.2, GET/SET_RGB_WHITE_BALANCE 0xE9 / 0xEA):
-  "Color Calibration": R, G, B gain sliders (255 = unchanged), nine test
+  it). Color Calibration (firmware v1.2, the firmware's white balance,
+  GET/SET_RGB_WHITE_BALANCE 0xE9 / 0xEA): R, G, B gain sliders (255 = unchanged), nine test
   colours (White, Red, Green, Blue, Yellow, Cyan, Magenta, Orange, Purple;
   each lights every key as Solid Color in it at the current brightness, the
   lighting before the first one kept in the tab and put back by "Back to my
@@ -117,8 +117,11 @@ of a tab, which reloads the page once); after that it is fast.
   default Windows install path is set at the top). `URL` = the file build
   `file:///<checkout>/build/index.html#/demo` (after `npm run build`; no
   priming needed) or `npx vite dev --port 5199` with
-  `http://localhost:5199/#/demo`. Copy the CDP part of smoke-demo.mjs for a
-  one-off check.
+  `http://localhost:5199/#/demo`. smoke-demo covers the Lighting tab (Color
+  Calibration test colours White and Red, Back to my effect, the effect
+  picker with all 52 effects, Custom), Advanced Keys (Tap Dance create /
+  bind) and Settings; results in OUTDIR/report.json. Copy the CDP part of
+  smoke-demo.mjs for a one-off check.
 - `node scripts/smoke-delete.mjs URL OUTDIR` (same URL): deleting an
   advanced key from its own editor removes that key, not slot 0 (an upstream
   bug fixed in the fork: the Delete dialog read the open key's index after
