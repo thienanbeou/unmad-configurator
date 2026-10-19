@@ -93,6 +93,9 @@ this program. If not, see <https://www.gnu.org/licenses/>.
       bind:value={
         () => String(macroNode.action),
         (v) => {
+          // Clicking the selected action deselects it (""), which would store
+          // MACRO_ACTION_NONE and silently turn the step off
+          if (v === "") return
           macrosQuery.set({
             offset: macroNodeId,
             data: [{ ...macroNode, action: Number(v) }],

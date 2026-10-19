@@ -259,6 +259,21 @@ report.td.bind = await evaluate(`(() => {
   return true
 })()`)
 await sleep(2500)
+// Clicking the step's selected action must keep it (it used to deselect and
+// store "none", which turned the step off)
+const actionState = () =>
+  evaluate(
+    `[...document.querySelectorAll("button[data-state]")].filter((e) => ["Tap", "Press", "Release"].includes(e.textContent.trim())).map((e) => e.textContent.trim() + ":" + e.dataset.state).join(" ")`,
+  )
+report.td.actionBefore = await actionState()
+await evaluate(
+  `[...document.querySelectorAll("button[data-state=on]")].find((e) => e.textContent.trim() === "Tap")?.click()`,
+)
+await sleep(1500)
+report.td.actionAfterReclick = await actionState()
+report.td.actionKept =
+  report.td.actionBefore.includes("Tap:on") &&
+  report.td.actionAfterReclick.includes("Tap:on")
 await shot("07-tap-dance-bound")
 report.td.done = await clickText("Done")
 await sleep(2500)
