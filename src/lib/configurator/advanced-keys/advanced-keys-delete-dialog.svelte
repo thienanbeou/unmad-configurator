@@ -60,11 +60,14 @@ this program. If not, see <https://www.gnu.org/licenses/>.
       </Dialog.Close>
       <Dialog.Close
         onclick={() => {
-          if (index === currentIndex) {
+          // Read the slot first: in the config menu `index` is the open key,
+          // and closing the menu turns it into null (= slot 0 below)
+          const target = index
+          if (target === currentIndex) {
             advancedKeysState.setIndex(null)
           }
           advancedKeysQuery.set({
-            offset: index,
+            offset: target,
             data: [defaultAdvancedKey],
           })
         }}
