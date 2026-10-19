@@ -57,7 +57,7 @@ of a tab, which reloads the page once); after that it is fast.
 - **Two upstream bugs fixed** that corrupt tap dances: an unknown advanced key
   type was written back as zeros, and new macros were placed on nodes that tap
   dances use (`findEmptyMacroNode` only followed Macro keys).
-- **Lighting** tab (commands 0xE0-0xE3, 0xE7-0xEA): all 52 QMK effects
+- **Lighting** tab (commands 0xE0-0xE3, 0xE7-0xEC): all 52 QMK effects
   (21 before firmware v1.1; names and controls in `rgbEffectMetadata`),
   brightness (the stock firmware never went above 210; the firmware allows 255), speed, base
   colour, per-key colours for the Custom effect. "Color range" slider (`hueRange`, GET_RGB byte 8 / SET_RGB
@@ -91,6 +91,15 @@ of a tab, which reloads the page once); after that it is fast.
   under "Keyboard Switches" (two columns, one-line descriptions); kept next
   to the keys on purpose: the board shows no sign of their state, and a
   remapped key leaves only the switch to turn one off.
+- **Layers** (firmware v1.2): a "Layers" section in the key list
+  (`src/lib/keycodes/layers.ts`) with MO and Layer Lock (moved from
+  Special) plus TO(n), DF(n), One Shot OSL(n) and OSM (8 modifiers) and Tri
+  Layer Lower / Upper (only with 4+ layers); keycodes 0xA0-0xBF and 0xF6 /
+  0xF7. Layer Indicator switch in Settings (option bit 8, stored inverted)
+  and its colour / brightness in Lighting (GET/SET_RGB_LAYER 0xEB / 0xEC,
+  hidden when the firmware does not answer, grayed out while the switch is
+  off). SET_OPTIONS now sends the options as two bytes (u16 LE); it sent one
+  before, which was enough while every bit sat in the low byte.
 - **Layout**: the keyboard pane takes about 300 px (35-55% of the window,
   `keyboard-editor-pane.svelte`), the settings pane the rest; one dragged
   split is saved for every tab (`autoSaveId` in `keyboard-editor.svelte`).
@@ -126,7 +135,8 @@ of a tab, which reloads the page once); after that it is fast.
   `http://localhost:5199/#/demo`. smoke-demo covers the Lighting tab (Color
   Calibration test colours White and Red, Back to my effect, the effect
   picker with all 52 effects, reopened at 1280 x 560 it must start at the
-  current effect, Custom), Advanced Keys (Tap Dance create /
+  current effect, Custom), the Remap key list's Layers section (MO, TO, DF,
+  OSL, Layer Lock, Tri Lower, OS LShift), Advanced Keys (Tap Dance create /
   bind) and Settings; results in OUTDIR/report.json. Copy the CDP part of
   smoke-demo.mjs for a one-off check.
 - `node scripts/smoke-delete.mjs URL OUTDIR` (same URL): deleting an

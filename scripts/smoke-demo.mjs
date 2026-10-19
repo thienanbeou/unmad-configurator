@@ -192,9 +192,18 @@ await shot("04-advanced-keys")
 report.settings = await clickText("Settings")
 await sleep(3000)
 report.settingsText = await evaluate(
-  `["WASD Swap", "Win Lock", "6KRO Only"].every((t) => document.body.innerText.includes(t))`,
+  `["WASD Swap", "Win Lock", "6KRO Only", "Layer Indicator"].every((t) => document.body.innerText.includes(t))`,
 )
 await shot("05-settings")
+// Remap key picker: the Layers section lists the layer keys (firmware v1.2)
+await clickText("Remap")
+await sleep(2500)
+report.layersSection = await clickText("Layers")
+await sleep(1500)
+report.layerKeys = await evaluate(
+  `["MO(1)", "TO(1)", "DF(1)", "OSL(1)", "Layer Lock", "Tri Lower", "OS LShift"].filter((t) => ![...document.querySelectorAll("button")].some((b) => b.innerText.trim().replace(/\\s+/g, " ") === t))`,
+)
+await shot("05b-layer-keys")
 // Tap Dance editor flow
 const clickWhere = (pred) =>
   evaluate(`(() => {

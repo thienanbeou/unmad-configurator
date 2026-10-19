@@ -185,6 +185,17 @@ export enum Keycode {
   SP_MOUSE_BUTTON_4 = 0x9e,
   SP_MOUSE_BUTTON_5 = 0x9f,
 
+  // MAD60 HE fork v1.2: QMK layer keys TO(n), DF(n), OSL(n) and OSM(m) (m in
+  // HID modifier order: LCtrl, LShift, LAlt, LGUI, RCtrl, RShift, RAlt, RGUI)
+  SP_TO_MIN = 0xa0,
+  SP_TO_MAX = 0xa7,
+  SP_DF_MIN = 0xa8,
+  SP_DF_MAX = 0xaf,
+  SP_OSL_MIN = 0xb0,
+  SP_OSL_MAX = 0xb7,
+  SP_OSM_MIN = 0xb8,
+  SP_OSM_MAX = 0xbf,
+
   // Layer keycodes
   SP_MO_MIN = 0xc0,
   SP_MO_MAX = 0xc7,
@@ -208,6 +219,9 @@ export enum Keycode {
   SP_GRAVE_ESCAPE = 0xf3,
   SP_REPEAT_KEY = 0xf4,
   SP_MAC_MODE = 0xf5,
+  // MAD60 HE fork v1.2: QMK Tri Layer (MO(1) / MO(2), both = layer 3)
+  SP_TRI_LAYER_LOWER = 0xf6,
+  SP_TRI_LAYER_UPPER = 0xf7,
 
   XXXXXXX = KC_NO,
   _______ = KC_TRANSPARENT,
@@ -360,6 +374,23 @@ export function MO(layer: number) {
 
 export function MO_GET_LAYER(keycode: number) {
   return keycode & 0x07
+}
+
+// MAD60 HE fork v1.2: TO, DF, OSL take a layer, OSM a modifier (0-7)
+export function TO(layer: number) {
+  return Keycode.SP_TO_MIN | layer
+}
+
+export function DF(layer: number) {
+  return Keycode.SP_DF_MIN | layer
+}
+
+export function OSL(layer: number) {
+  return Keycode.SP_OSL_MIN | layer
+}
+
+export function OSM(modifier: number) {
+  return Keycode.SP_OSM_MIN | modifier
 }
 
 export function PF(profile: number) {

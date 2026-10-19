@@ -21,6 +21,11 @@ import { advancedKeysKeycodeMetadata } from "./advanced-keys"
 import { basicKeycodeMetadata, basicKeycodes } from "./basic"
 import { extendedKeycodeMetadata, extendedKeycodes } from "./extended"
 import { gamepadKeycodeMetadata } from "./gamepad"
+import {
+  getLayerKeyMetadata,
+  getLayersKeycodes,
+  layersKeycodeMetadata,
+} from "./layers"
 import { mediaKeycodeMetadata, mediaKeycodes } from "./media"
 import { mouseKeycodeMetadata, mouseKeycodes } from "./mouse"
 import { getProfilesKeycodes, profilesKeycodeMetadata } from "./profiles"
@@ -30,6 +35,7 @@ export const keycodeCategories = {
   BASIC: "Basic",
   EXTENDED: "Extended",
   SPECIAL: "Special",
+  LAYERS: "Layers",
   PROFILES: "Profiles",
   MEDIA: "Media",
   MOUSE: "Mouse",
@@ -54,6 +60,7 @@ export const keycodeMetadata: KeycodeMetadata[] = [
   ...basicKeycodeMetadata,
   ...extendedKeycodeMetadata,
   ...specialKeycodeMetadata,
+  ...layersKeycodeMetadata,
   ...profilesKeycodeMetadata,
   ...mediaKeycodeMetadata,
   ...mouseKeycodeMetadata,
@@ -73,9 +80,13 @@ export function getKeycodeMetadata(keycode: Keycode): KeycodeMetadata {
       tooltip: `Hold to Activate Layer ${layer}`,
       keycode,
       webCodes: [],
-      category: "Special",
+      category: "Layers",
     }
   }
+
+  const layerKey = getLayerKeyMetadata(keycode)
+  if (layerKey)
+    return { ...layerKey, keycode, webCodes: [], category: "Layers" }
 
   if (Keycode.SP_PF_MIN <= keycode && keycode <= Keycode.SP_PF_MAX) {
     const profile = PF_GET_PROFILE(keycode)
@@ -106,7 +117,8 @@ export function getCategorizedKeycodes({
   return [
     ["Basic", basicKeycodes],
     ["Extended", extendedKeycodes],
-    ["Special", getSpecialKeycodes(numLayers)],
+    ["Special", getSpecialKeycodes()],
+    ["Layers", getLayersKeycodes(numLayers)],
     ["Profiles", getProfilesKeycodes(numProfiles)],
     ["Media", mediaKeycodes],
     ["Mouse", mouseKeycodes],

@@ -16,6 +16,7 @@
 import type {
   SetRgbCapsParams,
   SetRgbKeyColorsParams,
+  SetRgbLayerParams,
   SetRgbParams,
   SetRgbWhiteBalanceParams,
 } from "$lib/keyboard"
@@ -153,5 +154,34 @@ export async function setRgbWhiteBalance(
   await commander.sendCommand({
     command: HMK_Command.SET_RGB_WHITE_BALANCE,
     payload: data,
+  })
+}
+
+/**
+ * Layer indicator colour (QMK HSV), or null when the firmware cannot set it
+ * (older than v1.2)
+ */
+export async function getRgbLayer(
+  commander: Commander,
+): Promise<HMK_RgbCaps | null> {
+  let view: DataView
+  try {
+    view = await commander.sendCommand({
+      command: HMK_Command.GET_RGB_LAYER,
+      timeout: 1000,
+    })
+  } catch {
+    return null
+  }
+  return { hue: view.getUint8(0), sat: view.getUint8(1), val: view.getUint8(2) }
+}
+
+export async function setRgbLayer(
+  commander: Commander,
+  { data: { hue, sat, val } }: SetRgbLayerParams,
+) {
+  await commander.sendCommand({
+    command: HMK_Command.SET_RGB_LAYER,
+    payload: [hue, sat, val],
   })
 }

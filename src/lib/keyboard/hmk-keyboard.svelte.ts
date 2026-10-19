@@ -59,10 +59,12 @@ import {
   getRgb,
   getRgbCaps,
   getRgbKeyColors,
+  getRgbLayer,
   getRgbWhiteBalance,
   setRgb,
   setRgbCaps,
   setRgbKeyColors,
+  setRgbLayer,
   setRgbWhiteBalance,
 } from "$lib/libhmk/commands/rgb"
 import { getSerial } from "$lib/libhmk/commands/serial"
@@ -91,6 +93,7 @@ import type {
   SetRgbKeyColorsParams,
   SetRgbParams,
   SetRgbWhiteBalanceParams,
+  SetRgbLayerParams,
   SetTickRateParams,
 } from "."
 import { Commander } from "./commander"
@@ -242,6 +245,12 @@ class HMKKeyboard implements Keyboard {
   }
   setRgbWhiteBalance(params: SetRgbWhiteBalanceParams) {
     return setRgbWhiteBalance(this.commander, params)
+  }
+  getRgbLayer() {
+    return getRgbLayer(this.commander)
+  }
+  setRgbLayer(params: SetRgbLayerParams) {
+    return setRgbLayer(this.commander, params)
   }
 }
 

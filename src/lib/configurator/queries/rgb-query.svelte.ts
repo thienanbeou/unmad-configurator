@@ -17,6 +17,7 @@ import {
   keyboardContext,
   type SetRgbCapsParams,
   type SetRgbKeyColorsParams,
+  type SetRgbLayerParams,
   type SetRgbParams,
   type SetRgbWhiteBalanceParams,
 } from "$lib/keyboard"
@@ -32,6 +33,8 @@ export class RgbQuery {
   caps: ResourceReturn<HMK_RgbCaps | null>
   // White balance [r, g, b], null when the firmware cannot set it
   whiteBalance: ResourceReturn<HMK_RgbColor | null>
+  // Layer indicator colour, null when the firmware cannot set it
+  layer: ResourceReturn<HMK_RgbCaps | null>
 
   #keyboard = keyboardContext.get()
 
@@ -50,6 +53,11 @@ export class RgbQuery {
       () => !!this.rgb.current,
       (supported) =>
         supported ? this.#keyboard.getRgbCaps() : Promise.resolve(null),
+    )
+    this.layer = resource(
+      () => !!this.rgb.current,
+      (supported) =>
+        supported ? this.#keyboard.getRgbLayer() : Promise.resolve(null),
     )
     this.whiteBalance = resource(
       () => !!this.rgb.current,
@@ -73,6 +81,15 @@ export class RgbQuery {
       resource: this.caps,
       optimisticFn: (current) => (current ? data : current),
       updateFn: () => this.#keyboard.setRgbCaps(params),
+    })
+  }
+
+  async setLayer(params: SetRgbLayerParams) {
+    const { data } = params
+    await optimisticUpdate({
+      resource: this.layer,
+      optimisticFn: (current) => (current ? data : current),
+      updateFn: () => this.#keyboard.setRgbLayer(params),
     })
   }
 

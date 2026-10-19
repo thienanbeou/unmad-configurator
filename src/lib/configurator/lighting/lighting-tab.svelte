@@ -13,7 +13,7 @@ You should have received a copy of the GNU General Public License along with
 this program. If not, see <https://www.gnu.org/licenses/>.
 -->
 
-<!-- MAD60 HE fork: lighting (libhmk src/rgb.c, commands 0xE0-0xE3, 0xE7-0xEA) -->
+<!-- MAD60 HE fork: lighting (libhmk src/rgb.c, commands 0xE0-0xE3, 0xE7-0xEC) -->
 <script lang="ts">
   import { ChevronDownIcon } from "@lucide/svelte"
   import AreaSelect from "$lib/components/area-select.svelte"
@@ -73,6 +73,8 @@ this program. If not, see <https://www.gnu.org/licenses/>.
   const { current: keymap } = $derived(keymapQueryContext.get().keymap)
   const { current: options } = $derived(optionsQueryContext.get().options)
   const capsOff = $derived(options?.capsIndicatorDisabled ?? false)
+  const { current: layerColor } = $derived(rgbQuery.layer)
+  const layerOff = $derived(options?.layerIndicatorDisabled ?? false)
   const allKeys = $derived(
     displayLayoutContext.get().displayKeys.map(({ key }) => key),
   )
@@ -475,6 +477,49 @@ this program. If not, see <https://www.gnu.org/licenses/>.
                 max={rgb.maxBrightness}
                 step={1}
                 title="Caps Lock Brightness"
+              />
+            {/if}
+            {#if layerColor}
+              <div class="flex flex-col gap-2">
+                <label class="grid text-sm" for="rgb-layer-color">
+                  <span class="font-medium">Layer Indicator</span>
+                  <span class="text-muted-foreground">
+                    {layerOff
+                      ? "Off: turn the Layer Indicator on in Settings to use it."
+                      : "While a layer other than 0 is on (Fn held, a layer locked), the keys that do something there light in this color. Turn it off in Settings."}
+                  </span>
+                </label>
+                <input
+                  id="rgb-layer-color"
+                  class="h-9 w-24 cursor-pointer rounded-md border disabled:cursor-not-allowed disabled:opacity-50"
+                  disabled={layerOff}
+                  type="color"
+                  value={rgbToHex(
+                    hsvToRgb(layerColor.hue, layerColor.sat, 255),
+                  )}
+                  onchange={(e) => {
+                    const [hue, sat] = rgbToHueSat(
+                      hexToRgb(e.currentTarget.value),
+                    )
+                    rgbQuery.setLayer({ data: { ...layerColor, hue, sat } })
+                  }}
+                />
+              </div>
+              <CommitSlider
+                bind:committed={
+                  () => layerColor.val,
+                  (v) => rgbQuery.setLayer({ data: { ...layerColor, val: v } })
+                }
+                description="Brightness of the layer indicator, separate from the effect's."
+                disabled={layerOff}
+                display={(v) =>
+                  v > HMK_RGB_STOCK_MAX_BRIGHTNESS
+                    ? `${v} (above stock ${HMK_RGB_STOCK_MAX_BRIGHTNESS})`
+                    : String(v)}
+                min={0}
+                max={rgb.maxBrightness}
+                step={1}
+                title="Layer Indicator Brightness"
               />
             {/if}
             {#if custom}

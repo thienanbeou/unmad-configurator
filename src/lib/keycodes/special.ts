@@ -31,7 +31,7 @@ import {
   SunDimIcon,
   SunIcon,
 } from "@lucide/svelte"
-import { Keycode, MO } from "$lib/libhmk/keycodes"
+import { Keycode } from "$lib/libhmk/keycodes"
 import type { KeycodeMetadata } from "."
 
 export const specialKeycodeMetadata: KeycodeMetadata[] = [
@@ -177,7 +177,7 @@ export const specialKeycodeMetadata: KeycodeMetadata[] = [
       "Layer Toggle. Swap the default layer between layer 0 and the current layer.",
     keycode: Keycode.SP_LAYER_LOCK,
     webCodes: [],
-    category: "Special",
+    category: "Layers",
   },
   {
     name: "Boot",
@@ -232,7 +232,7 @@ export const specialKeycodeMetadata: KeycodeMetadata[] = [
   },
 ]
 
-export function getSpecialKeycodes(numLayers: number) {
+export function getSpecialKeycodes() {
   return [
     Keycode.KC_MAIL,
     Keycode.KC_CALCULATOR,
@@ -251,8 +251,6 @@ export function getSpecialKeycodes(numLayers: number) {
     Keycode.KC_BRIGHTNESS_DOWN,
     Keycode.KC_BRIGHTNESS_UP,
     Keycode.SP_KEY_LOCK,
-    ...[...Array(numLayers)].map((_, i) => MO(i)),
-    Keycode.SP_LAYER_LOCK,
     Keycode.SP_BOOT,
     Keycode.SP_WASD_SWAP,
     Keycode.SP_GUI_LOCK,

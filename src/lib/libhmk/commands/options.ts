@@ -33,6 +33,7 @@ export async function getOptions(commander: Commander): Promise<HMK_Options> {
     nkroDisabled: ((optionsRaw >> 5) & 1) !== 0,
     macModeEnabled: ((optionsRaw >> 6) & 1) !== 0,
     capsIndicatorDisabled: ((optionsRaw >> 7) & 1) !== 0,
+    layerIndicatorDisabled: ((optionsRaw >> 8) & 1) !== 0,
   }
 }
 
@@ -48,20 +49,23 @@ export async function setOptions(
       nkroDisabled,
       macModeEnabled,
       capsIndicatorDisabled,
+      layerIndicatorDisabled,
     },
   }: SetOptionsParams,
 ) {
+  const raw =
+    ((xInputEnabled ? 1 : 0) << 0) |
+    ((saveBottomOutThreshold ? 1 : 0) << 1) |
+    ((highPollingRateEnabled ? 1 : 0) << 2) |
+    ((wasdSwapEnabled ? 1 : 0) << 3) |
+    ((guiLockEnabled ? 1 : 0) << 4) |
+    ((nkroDisabled ? 1 : 0) << 5) |
+    ((macModeEnabled ? 1 : 0) << 6) |
+    ((capsIndicatorDisabled ? 1 : 0) << 7) |
+    ((layerIndicatorDisabled ? 1 : 0) << 8)
   await commander.sendCommand({
     command: HMK_Command.SET_OPTIONS,
-    payload: [
-      ((xInputEnabled ? 1 : 0) << 0) |
-        ((saveBottomOutThreshold ? 1 : 0) << 1) |
-        ((highPollingRateEnabled ? 1 : 0) << 2) |
-        ((wasdSwapEnabled ? 1 : 0) << 3) |
-        ((guiLockEnabled ? 1 : 0) << 4) |
-        ((nkroDisabled ? 1 : 0) << 5) |
-        ((macModeEnabled ? 1 : 0) << 6) |
-        ((capsIndicatorDisabled ? 1 : 0) << 7),
-    ],
+    // u16 little endian (bit 8 and up need the second byte)
+    payload: [raw & 0xff, raw >> 8],
   })
 }

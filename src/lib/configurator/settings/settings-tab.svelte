@@ -128,6 +128,17 @@ this program. If not, see <https://www.gnu.org/licenses/>.
       title="Caps Lock Indicator"
       description="Light the Caps Lock key while Caps Lock is on. Color and brightness are in the Lighting tab. Needs firmware v1.1 or later."
     />
+    <Switch
+      bind:checked={
+        () => !(options?.layerIndicatorDisabled ?? false),
+        (v) =>
+          options &&
+          optionsQuery.set({ data: { ...options, layerIndicatorDisabled: !v } })
+      }
+      id="layer-indicator"
+      title="Layer Indicator"
+      description="While a layer other than 0 is on, light the keys that do something there. Color and brightness are in the Lighting tab. Needs firmware v1.2 or later."
+    />
     <div class="flex flex-col gap-2">
       <div class="grid text-sm text-wrap">
         <span class="font-semibold">Restart Keyboard</span>
