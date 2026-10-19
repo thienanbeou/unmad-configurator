@@ -57,6 +57,9 @@ of a tab, which reloads the page once); after that it is fast.
   handle on each step, drag and drop or Arrow Up / Down. The nodes and links
   stay put; only keycode / action / delay move between them, so heads and
   `next` stay valid (`move()` in `macro-sequence.svelte`).
+- **A step's selected action stays selected** when clicked again
+  (`macro-node.svelte`). The Action toggle group used to deselect, which
+  stored MACRO_ACTION_NONE and silently turned the step off.
 - **Two upstream bugs fixed** that corrupt tap dances: an unknown advanced key
   type was written back as zeros, and new macros were placed on nodes that tap
   dances use (`findEmptyMacroNode` only followed Macro keys).
@@ -140,7 +143,7 @@ of a tab, which reloads the page once); after that it is fast.
   picker with all 52 effects, reopened at 1280 x 560 it must start at the
   current effect, Custom), the Remap key list's Layers section (MO, TO, DF,
   OSL, Layer Lock, Tri Lower, OS LShift), Advanced Keys (Tap Dance create /
-  bind) and Settings; results in OUTDIR/report.json. Copy the CDP part of
+  bind, re-clicking a step's selected action keeps it) and Settings; results in OUTDIR/report.json. Copy the CDP part of
   smoke-demo.mjs for a one-off check.
 - `node scripts/smoke-delete.mjs URL OUTDIR` (same URL): deleting an
   advanced key from its own editor removes that key, not slot 0 (an upstream
