@@ -39,6 +39,7 @@ this program. If not, see <https://www.gnu.org/licenses/>.
   import { SvelteSet } from "svelte/reactivity"
   import { displayLayoutContext } from "../context.svelte"
   import { keymapQueryContext } from "../queries/keymap-query.svelte"
+  import { optionsQueryContext } from "../queries/options-query.svelte"
   import { rgbQueryContext } from "../queries/rgb-query.svelte"
 
   const {
@@ -50,6 +51,8 @@ this program. If not, see <https://www.gnu.org/licenses/>.
   const { current: keyColors } = $derived(rgbQuery.keyColors)
   const { current: caps } = $derived(rgbQuery.caps)
   const { current: keymap } = $derived(keymapQueryContext.get().keymap)
+  const { current: options } = $derived(optionsQueryContext.get().options)
+  const capsOff = $derived(options?.capsIndicatorDisabled ?? false)
   const allKeys = $derived(
     displayLayoutContext.get().displayKeys.map(({ key }) => key),
   )
@@ -173,8 +176,7 @@ this program. If not, see <https://www.gnu.org/licenses/>.
               <label class="grid text-sm" for="rgb-effect">
                 <span class="font-medium">Effect</span>
                 <span class="text-muted-foreground">
-                  QMK RGB Matrix effects. The default, Rainbow Pinwheels, is the
-                  stock "Colorful Swirls 2".
+                  QMK RGB Matrix effects.
                 </span>
               </label>
               <select
@@ -211,7 +213,7 @@ this program. If not, see <https://www.gnu.org/licenses/>.
                 (v) => rgbQuery.set({ data: { ...rgb, speed: v } })
               }
               description={effect?.speed
-                ? "Animation speed."
+                ? (effect.speedHint ?? "Animation speed.")
                 : "This effect does not use the speed."}
               disabled={!effect?.speed}
               min={0}
@@ -268,13 +270,15 @@ this program. If not, see <https://www.gnu.org/licenses/>.
                 <label class="grid text-sm" for="rgb-caps-color">
                   <span class="font-medium">Caps Lock Indicator</span>
                   <span class="text-muted-foreground">
-                    Color of the Caps Lock key while Caps Lock is on, over any
-                    effect. Turn the indicator off in Settings.
+                    {capsOff
+                      ? "Off: turn the Caps Lock Indicator on in Settings to use it."
+                      : "Color of the Caps Lock key while Caps Lock is on, over any effect. Turn the indicator off in Settings."}
                   </span>
                 </label>
                 <input
                   id="rgb-caps-color"
-                  class="h-9 w-24 cursor-pointer rounded-md border"
+                  class="h-9 w-24 cursor-pointer rounded-md border disabled:cursor-not-allowed disabled:opacity-50"
+                  disabled={capsOff}
                   type="color"
                   value={rgbToHex(hsvToRgb(caps.hue, caps.sat, 255))}
                   onchange={(e) => {
@@ -291,6 +295,7 @@ this program. If not, see <https://www.gnu.org/licenses/>.
                   (v) => rgbQuery.setCaps({ data: { ...caps, val: v } })
                 }
                 description="Brightness of the Caps Lock indicator, separate from the effect's."
+                disabled={capsOff}
                 display={(v) =>
                   v > HMK_RGB_STOCK_MAX_BRIGHTNESS
                     ? `${v} (above stock ${HMK_RGB_STOCK_MAX_BRIGHTNESS})`

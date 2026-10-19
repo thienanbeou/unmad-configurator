@@ -63,7 +63,10 @@ of a tab, which reloads the page once); after that it is fast.
   firmware's fold); kept on purpose, with the full 0-255 slider. Hidden
   behind "no lighting" on other firmware. Firmware v1.1: Caps Lock indicator
   colour picker and brightness slider (GET/SET_RGB_CAPS 0xE7 / 0xE8, HSV;
-  hidden when the firmware does not answer). `src/lib/libhmk/rgb.ts`,
+  hidden when the firmware does not answer; grayed out while the Caps Lock
+  Indicator switch in Settings is off). Typing Heatmap's Speed slider sets
+  its fade (firmware v1.2; `speedHint` in `rgbEffectMetadata`; v1.1 ignores
+  it). `src/lib/libhmk/rgb.ts`,
   `src/lib/libhmk/commands/rgb.ts`,
   `src/lib/configurator/lighting/lighting-tab.svelte`,
   `src/lib/configurator/queries/rgb-query.svelte.ts`.

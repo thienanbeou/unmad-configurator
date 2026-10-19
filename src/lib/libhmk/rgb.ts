@@ -51,6 +51,8 @@ export type RgbEffectMetadata = {
   color: boolean
   // Whether the speed changes the effect
   speed: boolean
+  // What the speed does, if not the animation speed
+  speedHint?: string
   // Whether the colour range changes the effect (the rainbow effects)
   range?: boolean
 }
@@ -149,7 +151,14 @@ export const rgbEffectMetadata: RgbEffectMetadata[] = [
   { effect: 34, title: "Pixel Flow", color: true, speed: true, range: true },
   { effect: 35, title: "Pixel Rain", color: true, speed: true, range: true },
   // Heat sets the hue (blue -> red); the colour only changes the saturation
-  { effect: 36, title: "Typing Heatmap", color: false, speed: false },
+  {
+    effect: 36,
+    title: "Typing Heatmap",
+    color: false,
+    speed: true,
+    speedHint:
+      "How fast the keys fade after typing (127 = the QMK default, lower fades slower). Needs firmware v1.2 or later.",
+  },
   {
     effect: 37,
     title: "Solid Reactive",
