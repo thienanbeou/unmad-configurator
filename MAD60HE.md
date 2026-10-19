@@ -57,7 +57,7 @@ of a tab, which reloads the page once); after that it is fast.
 - **Two upstream bugs fixed** that corrupt tap dances: an unknown advanced key
   type was written back as zeros, and new macros were placed on nodes that tap
   dances use (`findEmptyMacroNode` only followed Macro keys).
-- **Lighting** tab (commands 0xE0-0xE3, 0xE7 / 0xE8): all 52 QMK effects
+- **Lighting** tab (commands 0xE0-0xE3, 0xE7-0xEA): all 52 QMK effects
   (21 before firmware v1.1; names and controls in `rgbEffectMetadata`),
   brightness (the stock firmware never went above 210; the firmware allows 255), speed, base
   colour, per-key colours for the Custom effect. "Color range" slider (`hueRange`, GET_RGB byte 8 / SET_RGB
@@ -70,7 +70,12 @@ of a tab, which reloads the page once); after that it is fast.
   hidden when the firmware does not answer; grayed out while the Caps Lock
   Indicator switch in Settings is off). Typing Heatmap's Speed slider sets
   its fade (firmware v1.2; `speedHint` in `rgbEffectMetadata`; v1.1 ignores
-  it). `src/lib/libhmk/rgb.ts`,
+  it). White Balance (firmware v1.2, GET/SET_RGB_WHITE_BALANCE 0xE9 / 0xEA):
+  R, G, B gain sliders (255 = unchanged) with "Show white" (white Solid
+  Color, the previous lighting kept in the tab and put back by "Back to my
+  effect") and Reset; hidden when the firmware does not answer. Same idea
+  as OpenMAD's colour calibration, done in the firmware so every effect is
+  corrected. `src/lib/libhmk/rgb.ts`,
   `src/lib/libhmk/commands/rgb.ts`,
   `src/lib/configurator/lighting/lighting-tab.svelte`,
   `src/lib/configurator/queries/rgb-query.svelte.ts`.

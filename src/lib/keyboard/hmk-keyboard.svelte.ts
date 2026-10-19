@@ -59,9 +59,11 @@ import {
   getRgb,
   getRgbCaps,
   getRgbKeyColors,
+  getRgbWhiteBalance,
   setRgb,
   setRgbCaps,
   setRgbKeyColors,
+  setRgbWhiteBalance,
 } from "$lib/libhmk/commands/rgb"
 import { getSerial } from "$lib/libhmk/commands/serial"
 import { getTickRate, setTickRate } from "$lib/libhmk/commands/tick-rate"
@@ -88,6 +90,7 @@ import type {
   SetRgbCapsParams,
   SetRgbKeyColorsParams,
   SetRgbParams,
+  SetRgbWhiteBalanceParams,
   SetTickRateParams,
 } from "."
 import { Commander } from "./commander"
@@ -233,6 +236,12 @@ class HMKKeyboard implements Keyboard {
   }
   setRgbCaps(params: SetRgbCapsParams) {
     return setRgbCaps(this.commander, params)
+  }
+  getRgbWhiteBalance() {
+    return getRgbWhiteBalance(this.commander)
+  }
+  setRgbWhiteBalance(params: SetRgbWhiteBalanceParams) {
+    return setRgbWhiteBalance(this.commander, params)
   }
 }
 

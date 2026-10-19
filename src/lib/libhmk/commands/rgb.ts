@@ -17,6 +17,7 @@ import type {
   SetRgbCapsParams,
   SetRgbKeyColorsParams,
   SetRgbParams,
+  SetRgbWhiteBalanceParams,
 } from "$lib/keyboard"
 import type { Commander } from "$lib/keyboard/commander"
 import { HMK_Command } from "."
@@ -123,5 +124,34 @@ export async function setRgbCaps(
   await commander.sendCommand({
     command: HMK_Command.SET_RGB_CAPS,
     payload: [hue, sat, val],
+  })
+}
+
+/**
+ * White balance: R, G, B gain applied to every LED (255 = unchanged), or null
+ * when the firmware cannot set it (older than v1.2)
+ */
+export async function getRgbWhiteBalance(
+  commander: Commander,
+): Promise<HMK_RgbColor | null> {
+  let view: DataView
+  try {
+    view = await commander.sendCommand({
+      command: HMK_Command.GET_RGB_WHITE_BALANCE,
+      timeout: 1000,
+    })
+  } catch {
+    return null
+  }
+  return [view.getUint8(0), view.getUint8(1), view.getUint8(2)]
+}
+
+export async function setRgbWhiteBalance(
+  commander: Commander,
+  { data }: SetRgbWhiteBalanceParams,
+) {
+  await commander.sendCommand({
+    command: HMK_Command.SET_RGB_WHITE_BALANCE,
+    payload: data,
   })
 }

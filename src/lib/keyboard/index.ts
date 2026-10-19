@@ -61,6 +61,7 @@ export type SetGamepadButtonsParams = SetProfileArrayParams<number>
 export type SetRgbParams = SetParams<HMK_RgbConfig>
 export type SetRgbKeyColorsParams = { offset: number; data: HMK_RgbColor[] }
 export type SetRgbCapsParams = SetParams<HMK_RgbCaps>
+export type SetRgbWhiteBalanceParams = SetParams<HMK_RgbColor>
 export type GetGamepadOptionsParams = GetProfileParams
 export type SetGamepadOptionsParams = SetProfileParams<HMK_GamepadOptions>
 
@@ -112,6 +113,8 @@ export type KeyboardAction = {
   setRgbKeyColors(params: SetRgbKeyColorsParams): Promise<void>
   getRgbCaps(): Promise<HMK_RgbCaps | null>
   setRgbCaps(params: SetRgbCapsParams): Promise<void>
+  getRgbWhiteBalance(): Promise<HMK_RgbColor | null>
+  setRgbWhiteBalance(params: SetRgbWhiteBalanceParams): Promise<void>
 }
 
 export type Keyboard = KeyboardState & KeyboardAction

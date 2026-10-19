@@ -112,6 +112,18 @@ await shot("02-lighting")
 report.lightingText = await evaluate(
   `document.body.innerText.includes("Rainbow Pinwheels") && document.body.innerText.includes("Brightness")`,
 )
+// White balance: "Show white" switches to white Solid Color, then back
+report.showWhite = await clickText("Show white")
+await sleep(1500)
+report.whiteShown = await evaluate(
+  `document.querySelector("#rgb-effect").textContent.trim() === "Solid Color"`,
+)
+await shot("02a-white-balance")
+report.backToEffect = await clickText("Back to my effect")
+await sleep(1500)
+report.effectRestored = await evaluate(
+  `document.querySelector("#rgb-effect").textContent.trim() === "Rainbow Pinwheels"`,
+)
 // Effect picker: open it, count the effects, pick Custom
 report.openPicker = await evaluate(
   `(() => { const t = document.querySelector("#rgb-effect"); if (!t) return false; t.click(); return true })()`,

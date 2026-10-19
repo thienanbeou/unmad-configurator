@@ -13,7 +13,7 @@ You should have received a copy of the GNU General Public License along with
 this program. If not, see <https://www.gnu.org/licenses/>.
 -->
 
-<!-- MAD60 HE fork: lighting (libhmk src/rgb.c, commands 0xE0-0xE3, 0xE7-0xE8) -->
+<!-- MAD60 HE fork: lighting (libhmk src/rgb.c, commands 0xE0-0xE3, 0xE7-0xEA) -->
 <script lang="ts">
   import { ChevronDownIcon } from "@lucide/svelte"
   import AreaSelect from "$lib/components/area-select.svelte"
@@ -28,12 +28,14 @@ this program. If not, see <https://www.gnu.org/licenses/>.
   import {
     hexToRgb,
     HMK_RGB_EFFECT_CUSTOM,
+    HMK_RGB_EFFECT_SOLID,
     HMK_RGB_STOCK_MAX_BRIGHTNESS,
     hsvToRgb,
     rgbEffectMetadata,
     rgbToHex,
     rgbToHueSat,
     type HMK_RgbColor,
+    type HMK_RgbConfig,
   } from "$lib/libhmk/rgb"
   import { cn, setToIntervals, type WithoutChildren } from "$lib/utils"
   import { ToggleGroup } from "bits-ui"
@@ -52,6 +54,9 @@ this program. If not, see <https://www.gnu.org/licenses/>.
   const { current: rgb } = $derived(rgbQuery.rgb)
   const { current: keyColors } = $derived(rgbQuery.keyColors)
   const { current: caps } = $derived(rgbQuery.caps)
+  const { current: whiteBalance } = $derived(rgbQuery.whiteBalance)
+  // Lighting before "Show white", to put it back
+  let beforeWhite = $state<HMK_RgbConfig | null>(null)
   const { current: keymap } = $derived(keymapQueryContext.get().keymap)
   const { current: options } = $derived(optionsQueryContext.get().options)
   const capsOff = $derived(options?.capsIndicatorDisabled ?? false)
@@ -276,6 +281,76 @@ this program. If not, see <https://www.gnu.org/licenses/>.
               step={1}
               title="Speed"
             />
+            {#if whiteBalance}
+              <div class="flex flex-col gap-2">
+                <div class="grid text-sm">
+                  <span class="font-medium">White Balance</span>
+                  <span class="text-muted-foreground">
+                    The LEDs are not color balanced (white can look blue-green).
+                    Show white, then lower the strongest channels until it looks
+                    neutral. Applies to every effect.
+                  </span>
+                </div>
+                <div class="flex gap-2">
+                  {#if beforeWhite}
+                    <Button
+                      onclick={() => {
+                        rgbQuery.set({ data: beforeWhite! })
+                        beforeWhite = null
+                      }}
+                      size="sm"
+                      variant="outline"
+                    >
+                      Back to my effect
+                    </Button>
+                  {:else}
+                    <Button
+                      onclick={() => {
+                        beforeWhite = { ...rgb }
+                        rgbQuery.set({
+                          data: {
+                            ...rgb,
+                            effect: HMK_RGB_EFFECT_SOLID,
+                            sat: 0,
+                          },
+                        })
+                      }}
+                      size="sm"
+                      variant="outline"
+                    >
+                      Show white
+                    </Button>
+                  {/if}
+                  <Button
+                    disabled={whiteBalance.every((v) => v === 255)}
+                    onclick={() =>
+                      rgbQuery.setWhiteBalance({ data: [255, 255, 255] })}
+                    size="sm"
+                    variant="outline"
+                  >
+                    Reset
+                  </Button>
+                </div>
+              </div>
+              {#each ["Red", "Green", "Blue"] as title, i (title)}
+                <CommitSlider
+                  bind:committed={
+                    () => whiteBalance[i],
+                    (v) =>
+                      rgbQuery.setWhiteBalance({
+                        data: whiteBalance.map((c, j) =>
+                          j === i ? v : c,
+                        ) as HMK_RgbColor,
+                      })
+                  }
+                  display={(v) => (v === 255 ? "255 (full)" : String(v))}
+                  min={0}
+                  max={255}
+                  step={1}
+                  {title}
+                />
+              {/each}
+            {/if}
           </FixedScrollArea>
           <FixedScrollArea class="flex flex-col gap-4 border-l p-4">
             <div class="flex flex-col gap-2">

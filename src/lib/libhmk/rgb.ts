@@ -43,6 +43,7 @@ export type HMK_RgbCaps = { hue: number; sat: number; val: number }
 export const HMK_RGB_STOCK_MAX_BRIGHTNESS = 210
 
 export const HMK_RGB_EFFECT_CUSTOM = 1
+export const HMK_RGB_EFFECT_SOLID = 2
 
 export type RgbEffectMetadata = {
   effect: number

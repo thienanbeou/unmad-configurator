@@ -45,6 +45,7 @@ import type {
   SetRgbCapsParams,
   SetRgbKeyColorsParams,
   SetRgbParams,
+  SetRgbWhiteBalanceParams,
   SetTickRateParams,
 } from "."
 import { demoMetadata } from "./metadata"
@@ -92,6 +93,7 @@ type DemoKeyboardState = {
   rgb: HMK_RgbConfig
   rgbKeyColors: HMK_RgbColor[]
   rgbCaps: HMK_RgbCaps
+  rgbWhiteBalance: HMK_RgbColor
 }
 
 export class DemoKeyboard implements Keyboard {
@@ -118,6 +120,7 @@ export class DemoKeyboard implements Keyboard {
     rgb: { effect: 13, hue: 0, sat: 255, val: 210, speed: 70, hueRange: 255 },
     rgbKeyColors: [...Array(numKeys)].map((): HMK_RgbColor => [0, 0, 0]),
     rgbCaps: { hue: 0, sat: 0, val: 210 },
+    rgbWhiteBalance: [255, 255, 255],
   }
 
   async disconnect() {}
@@ -224,6 +227,12 @@ export class DemoKeyboard implements Keyboard {
   }
   async setRgbCaps({ data }: SetRgbCapsParams) {
     this.#state.rgbCaps = data
+  }
+  async getRgbWhiteBalance(): Promise<HMK_RgbColor> {
+    return [...this.#state.rgbWhiteBalance]
+  }
+  async setRgbWhiteBalance({ data }: SetRgbWhiteBalanceParams) {
+    this.#state.rgbWhiteBalance = data
   }
   async setRgbKeyColors({ offset, data }: SetRgbKeyColorsParams) {
     for (let i = 0; i < data.length; i++) {
