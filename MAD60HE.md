@@ -50,6 +50,10 @@ of a tab, which reloads the page once); after that it is fast.
   `config-menu/tap-dance/tap-dance-config-menu.svelte`,
   `config-menu/macro/macro-sequence.svelte` (one chain, shared with the Macro
   editor).
+- **Reorder macro steps** (Macro keys and every Tap Dance action): grip
+  handle on each step, drag and drop or Arrow Up / Down. The nodes and links
+  stay put; only keycode / action / delay move between them, so heads and
+  `next` stay valid (`move()` in `macro-sequence.svelte`).
 - **Two upstream bugs fixed** that corrupt tap dances: an unknown advanced key
   type was written back as zeros, and new macros were placed on nodes that tap
   dances use (`findEmptyMacroNode` only followed Macro keys).
@@ -105,3 +109,6 @@ of a tab, which reloads the page once); after that it is fast.
   advanced key from its own editor removes that key, not slot 0 (an upstream
   bug fixed in the fork: the Delete dialog read the open key's index after
   closing the editor). Exit code 1 on failure.
+- `node scripts/smoke-reorder.mjs URL OUTDIR` (same URL): macro steps
+  reorder by drag and by Arrow Up / Down on the grip handle. Exit code 1 on
+  failure.

@@ -26,6 +26,7 @@ this program. If not, see <https://www.gnu.org/licenses/>.
   import { unitToStyle } from "$lib/ui"
   import { cn, type WithoutChild } from "$lib/utils"
   import { ToggleGroup } from "bits-ui"
+  import type { Snippet } from "svelte"
   import type { HTMLAttributes } from "svelte/elements"
   import z from "zod"
   import { configMenuStateContext } from "../context.svelte"
@@ -35,12 +36,15 @@ this program. If not, see <https://www.gnu.org/licenses/>.
     prevNodeId,
     macroNodeId,
     setHead,
+    handle,
     ...props
   }: WithoutChild<HTMLAttributes<HTMLDivElement>> & {
     prevNodeId: number | null
     macroNodeId: number
     // Stores a new first node in the advanced key that owns this chain
     setHead: (head: number) => Promise<void>
+    // Drag handle for reordering, drawn left of the keycode
+    handle?: Snippet
   } = $props()
 
   const configMenuState = configMenuStateContext.get()
@@ -59,6 +63,9 @@ this program. If not, see <https://www.gnu.org/licenses/>.
   )}
   {...props}
 >
+  {#if handle}
+    <div class="flex shrink-0 items-center px-1">{@render handle()}</div>
+  {/if}
   <div class="flex shrink-0 items-center justify-center p-2 text-xs">
     <div class="p-0.5" style={unitToStyle()}>
       <ToggleGroup.Item value={String(macroNodeId)}>
