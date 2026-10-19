@@ -95,6 +95,9 @@ of a tab, which reloads the page once); after that it is fast.
   which blocked laptops at 125-150% scaling).
 - **Effect picker** (Lighting): all effects in one grouped panel instead of
   a native select (`effectGroups` in `lighting-tab.svelte`, grouped by name).
+  It opens scrolled to the current effect, with focus on it
+  (`focusCurrentEffect`, the popover's `onOpenAutoFocus`), so short screens
+  do not start at the top of the list.
 - Upstream bug fixed: Delete inside the advanced key editor cleared slot 0
   (the first advanced key) instead of the open key.
 - Upstream bug fixed: the advanced key editor header showed "Unknown 0x108"
@@ -119,7 +122,8 @@ of a tab, which reloads the page once); after that it is fast.
   priming needed) or `npx vite dev --port 5199` with
   `http://localhost:5199/#/demo`. smoke-demo covers the Lighting tab (Color
   Calibration test colours White and Red, Back to my effect, the effect
-  picker with all 52 effects, Custom), Advanced Keys (Tap Dance create /
+  picker with all 52 effects, reopened at 1280 x 560 it must start at the
+  current effect, Custom), Advanced Keys (Tap Dance create /
   bind) and Settings; results in OUTDIR/report.json. Copy the CDP part of
   smoke-demo.mjs for a one-off check.
 - `node scripts/smoke-delete.mjs URL OUTDIR` (same URL): deleting an

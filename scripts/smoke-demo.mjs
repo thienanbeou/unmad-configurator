@@ -139,6 +139,42 @@ await shot("02b-effect-picker")
 report.effectOptions = await evaluate(
   `document.querySelectorAll("[data-slot=popover-content] button[aria-pressed]").length`,
 )
+// Short window: pick an effect from the last group, reopen, and the picker
+// must start scrolled to it, with it focused
+await send("Emulation.setDeviceMetricsOverride", {
+  width: 1280,
+  height: 560,
+  deviceScaleFactor: 1,
+  mobile: false,
+})
+await sleep(1000)
+const pickEffect = (title) =>
+  evaluate(
+    `(() => { const b = [...document.querySelectorAll("[data-slot=popover-content] button")].find((e) => e.textContent.trim() === ${JSON.stringify(title)}); if (!b) return false; b.click(); return true })()`,
+  )
+const openPicker = () =>
+  evaluate(
+    `(() => { const t = document.querySelector("#rgb-effect"); if (!t) return false; t.click(); return true })()`,
+  )
+if (
+  !(await evaluate(`!!document.querySelector("[data-slot=popover-content]")`))
+)
+  await openPicker()
+await sleep(800)
+report.pickLast = await pickEffect("Typing Heatmap")
+await sleep(1500)
+await openPicker()
+await sleep(1500)
+report.pickerAtCurrent = await evaluate(`(() => {
+  const c = document.querySelector("[data-slot=popover-content]")
+  const b = c?.querySelector("button[aria-pressed=true]")
+  if (!b) return "no current"
+  const cr = c.getBoundingClientRect(), br = b.getBoundingClientRect()
+  return { scrolled: c.scrollTop > 0, visible: br.top >= cr.top && br.bottom <= cr.bottom, focused: document.activeElement === b, title: b.textContent.trim() }
+})()`)
+await shot("02c-picker-short")
+await send("Emulation.clearDeviceMetricsOverride")
+await sleep(1000)
 report.setCustom = await evaluate(
   `(() => { const b = [...document.querySelectorAll("[data-slot=popover-content] button")].find((e) => e.textContent.trim() === "Custom (per-key colors)"); if (!b) return false; b.click(); return true })()`,
 )

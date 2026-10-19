@@ -92,6 +92,19 @@ this program. If not, see <https://www.gnu.org/licenses/>.
   // Effect picker: every effect at once, grouped by name (first match wins,
   // the rest are Basic)
   let effectsOpen = $state(false)
+  let effectsContent = $state<HTMLElement | null>(null)
+
+  // Open the picker at the current effect (on short screens it is below the
+  // fold), focused for the keyboard
+  function focusCurrentEffect(e: Event) {
+    const current = effectsContent?.querySelector<HTMLElement>(
+      "button[aria-pressed=true]",
+    )
+    if (!current) return
+    e.preventDefault()
+    current.focus({ preventScroll: true })
+    current.scrollIntoView({ block: "center" })
+  }
   const effectGroups = $derived.by(() => {
     const groups = [
       { title: "Basic", match: null },
@@ -232,8 +245,10 @@ this program. If not, see <https://www.gnu.org/licenses/>.
                   <ChevronDownIcon class="size-4 opacity-50" />
                 </Popover.Trigger>
                 <Popover.Content
+                  bind:ref={effectsContent}
                   align="start"
                   class="max-h-[calc(var(--bits-popover-content-available-height)-1rem)] w-[min(48rem,calc(100vw-2rem))] overflow-y-auto"
+                  onOpenAutoFocus={focusCurrentEffect}
                 >
                   {#each effectGroups as { title, effects } (title)}
                     <div class="flex flex-col gap-1">
