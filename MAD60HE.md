@@ -87,7 +87,10 @@ of a tab, which reloads the page once); after that it is fast.
   Mode (bit 6, `SP_MAC_MODE` 0xF5) and Caps Lock Indicator (bit 7, stored
   inverted) switches, and the keys Grave Escape (`SP_GRAVE_ESCAPE` 0xF3) and
   Repeat Key (`SP_REPEAT_KEY` 0xF4). Stock hmkconf writes the options from
-  the fields it knows and would clear these bits.
+  the fields it knows and would clear these bits. Settings groups the four
+  under "Keyboard Switches" (two columns, one-line descriptions); kept next
+  to the keys on purpose: the board shows no sign of their state, and a
+  remapped key leaves only the switch to turn one off.
 - **Layout**: the keyboard pane takes about 300 px (35-55% of the window,
   `keyboard-editor-pane.svelte`), the settings pane the rest; one dragged
   split is saved for every tab (`autoSaveId` in `keyboard-editor.svelte`).

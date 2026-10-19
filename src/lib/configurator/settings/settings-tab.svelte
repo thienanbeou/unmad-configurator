@@ -61,49 +61,62 @@ this program. If not, see <https://www.gnu.org/licenses/>.
         description="Enable the 8000Hz polling rate for faster response times, but may increase the CPU usage of the host device. Restart the keyboard to apply changes. This setting applies globally across all profiles."
       />
     {/if}
-    <Switch
-      bind:checked={
-        () => options?.wasdSwapEnabled ?? false,
-        (v) =>
-          options &&
-          optionsQuery.set({ data: { ...options, wasdSwapEnabled: v } })
-      }
-      id="wasd-swap"
-      title="WASD Swap"
-      description="Swap W, A, S and D with the arrow keys (stock MAD60 HE switch). The WASD Swap key toggles it too. Applies to all profiles."
-    />
-    <Switch
-      bind:checked={
-        () => options?.guiLockEnabled ?? false,
-        (v) =>
-          options &&
-          optionsQuery.set({ data: { ...options, guiLockEnabled: v } })
-      }
-      id="win-lock"
-      title="Win Lock"
-      description="Block both Windows (GUI) keys, e.g. while gaming (stock MAD60 HE switch). The Win Lock key toggles it too. Applies to all profiles."
-    />
-    <Switch
-      bind:checked={
-        () => options?.nkroDisabled ?? false,
-        (v) =>
-          options && optionsQuery.set({ data: { ...options, nkroDisabled: v } })
-      }
-      id="6kro"
-      title="6KRO Only"
-      description="Report at most 6 keys at once instead of N-key rollover, for BIOS screens or software that mishandles NKRO (stock MAD60 HE switch). The 6KRO/NKRO key toggles it too."
-    />
-    <Switch
-      bind:checked={
-        () => options?.macModeEnabled ?? false,
-        (v) =>
-          options &&
-          optionsQuery.set({ data: { ...options, macModeEnabled: v } })
-      }
-      id="mac-mode"
-      title="Mac Mode"
-      description="Swap Alt and Windows (GUI) on both sides, so the key next to Space is Command on a Mac (the stock Win/Mac switch). The Mac Mode key toggles it too. Applies to all profiles. Needs firmware v1.1 or later."
-    />
+    <div class="flex flex-col gap-3">
+      <div class="grid text-sm text-wrap">
+        <span class="font-semibold">Keyboard Switches</span>
+        <span class="text-muted-foreground">
+          The stock MAD60 HE switches, for all profiles. Each also has a key in
+          the Special keycodes (on Fn in the stock layout); this page shows
+          whether it is on.
+        </span>
+      </div>
+      <div class="grid gap-4 sm:grid-cols-2">
+        <Switch
+          bind:checked={
+            () => options?.wasdSwapEnabled ?? false,
+            (v) =>
+              options &&
+              optionsQuery.set({ data: { ...options, wasdSwapEnabled: v } })
+          }
+          id="wasd-swap"
+          title="WASD Swap"
+          description="W, A, S and D act as the arrow keys."
+        />
+        <Switch
+          bind:checked={
+            () => options?.guiLockEnabled ?? false,
+            (v) =>
+              options &&
+              optionsQuery.set({ data: { ...options, guiLockEnabled: v } })
+          }
+          id="win-lock"
+          title="Win Lock"
+          description="Block both Windows keys, e.g. while gaming."
+        />
+        <Switch
+          bind:checked={
+            () => options?.nkroDisabled ?? false,
+            (v) =>
+              options &&
+              optionsQuery.set({ data: { ...options, nkroDisabled: v } })
+          }
+          id="6kro"
+          title="6KRO Only"
+          description="At most 6 keys at once, for BIOS screens and picky software."
+        />
+        <Switch
+          bind:checked={
+            () => options?.macModeEnabled ?? false,
+            (v) =>
+              options &&
+              optionsQuery.set({ data: { ...options, macModeEnabled: v } })
+          }
+          id="mac-mode"
+          title="Mac Mode"
+          description="Swap Alt and Windows, so Command sits next to Space. Needs firmware v1.1 or later."
+        />
+      </div>
+    </div>
     <Switch
       bind:checked={
         () => !(options?.capsIndicatorDisabled ?? false),
@@ -113,7 +126,7 @@ this program. If not, see <https://www.gnu.org/licenses/>.
       }
       id="caps-indicator"
       title="Caps Lock Indicator"
-      description="Light the Caps Lock key while Caps Lock is on, over any lighting effect. Needs firmware v1.1 or later. Set its color and brightness in the Lighting tab."
+      description="Light the Caps Lock key while Caps Lock is on. Color and brightness are in the Lighting tab. Needs firmware v1.1 or later."
     />
     <div class="flex flex-col gap-2">
       <div class="grid text-sm text-wrap">
