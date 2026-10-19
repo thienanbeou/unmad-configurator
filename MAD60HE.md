@@ -77,6 +77,8 @@ of a tab, which reloads the page once); after that it is fast.
   inverted) switches, and the keys Grave Escape (`SP_GRAVE_ESCAPE` 0xF3) and
   Repeat Key (`SP_REPEAT_KEY` 0xF4). Stock hmkconf writes the options from
   the fields it knows and would clear these bits.
+- Upstream bug fixed: Delete inside the advanced key editor cleared slot 0
+  (the first advanced key) instead of the open key.
 - Upstream bug fixed: the advanced key editor header showed "Unknown 0x108"
   (it passed the firmware version instead of the key type).
 - **Remap tab shows advanced keys**: a key taken over by Tap Dance / Macro /
@@ -99,3 +101,7 @@ of a tab, which reloads the page once); after that it is fast.
   priming needed) or `npx vite dev --port 5199` with
   `http://localhost:5199/#/demo`. Copy the CDP part of smoke-demo.mjs for a
   one-off check.
+- `node scripts/smoke-delete.mjs URL OUTDIR` (same URL): deleting an
+  advanced key from its own editor removes that key, not slot 0 (an upstream
+  bug fixed in the fork: the Delete dialog read the open key's index after
+  closing the editor). Exit code 1 on failure.
