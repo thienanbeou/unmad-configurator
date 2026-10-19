@@ -55,8 +55,21 @@ this program. If not, see <https://www.gnu.org/licenses/>.
   const { current: keyColors } = $derived(rgbQuery.keyColors)
   const { current: caps } = $derived(rgbQuery.caps)
   const { current: whiteBalance } = $derived(rgbQuery.whiteBalance)
-  // Lighting before "Show white", to put it back
-  let beforeWhite = $state<HMK_RgbConfig | null>(null)
+  // Color calibration: a test color lights every key (Solid Color at the
+  // current brightness); the lighting before the first one is put back after
+  const testColors = [
+    ["White", "#ffffff"],
+    ["Red", "#ff0000"],
+    ["Green", "#00ff00"],
+    ["Blue", "#0000ff"],
+    ["Yellow", "#ffff00"],
+    ["Cyan", "#00ffff"],
+    ["Magenta", "#ff00ff"],
+    ["Orange", "#ff8000"],
+    ["Purple", "#8000ff"],
+  ] as const
+  let testColor = $state<string | null>(null)
+  let beforeTest = $state<HMK_RgbConfig | null>(null)
   const { current: keymap } = $derived(keymapQueryContext.get().keymap)
   const { current: options } = $derived(optionsQueryContext.get().options)
   const capsOff = $derived(options?.capsIndicatorDisabled ?? false)
@@ -284,43 +297,56 @@ this program. If not, see <https://www.gnu.org/licenses/>.
             {#if whiteBalance}
               <div class="flex flex-col gap-2">
                 <div class="grid text-sm">
-                  <span class="font-medium">White Balance</span>
+                  <span class="font-medium">Color Calibration</span>
                   <span class="text-muted-foreground">
                     The LEDs are not color balanced (white can look blue-green).
-                    Show white, then lower the strongest channels until it looks
-                    neutral. Applies to every effect.
+                    Pick a test color to light every key in it, then lower the
+                    strongest channels below until it looks right. Start with
+                    White. Applies to every effect.
                   </span>
                 </div>
-                <div class="flex gap-2">
-                  {#if beforeWhite}
+                <div class="flex flex-wrap gap-2">
+                  {#each testColors as [name, hex] (name)}
                     <Button
+                      aria-pressed={testColor === hex}
+                      class={cn(testColor === hex && "ring-2 ring-primary")}
                       onclick={() => {
-                        rgbQuery.set({ data: beforeWhite! })
-                        beforeWhite = null
-                      }}
-                      size="sm"
-                      variant="outline"
-                    >
-                      Back to my effect
-                    </Button>
-                  {:else}
-                    <Button
-                      onclick={() => {
-                        beforeWhite = { ...rgb }
+                        beforeTest ??= { ...rgb }
+                        testColor = hex
+                        const [hue, sat] = rgbToHueSat(hexToRgb(hex))
                         rgbQuery.set({
                           data: {
                             ...rgb,
                             effect: HMK_RGB_EFFECT_SOLID,
-                            sat: 0,
+                            hue,
+                            sat,
                           },
                         })
                       }}
                       size="sm"
                       variant="outline"
                     >
-                      Show white
+                      <span
+                        class="size-3 rounded-full border"
+                        style={`background: ${hex}`}
+                      ></span>
+                      {name}
                     </Button>
-                  {/if}
+                  {/each}
+                </div>
+                <div class="flex gap-2">
+                  <Button
+                    disabled={!beforeTest}
+                    onclick={() => {
+                      rgbQuery.set({ data: beforeTest! })
+                      beforeTest = null
+                      testColor = null
+                    }}
+                    size="sm"
+                    variant="outline"
+                  >
+                    Back to my effect
+                  </Button>
                   <Button
                     disabled={whiteBalance.every((v) => v === 255)}
                     onclick={() =>

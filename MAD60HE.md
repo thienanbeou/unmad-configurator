@@ -71,8 +71,10 @@ of a tab, which reloads the page once); after that it is fast.
   Indicator switch in Settings is off). Typing Heatmap's Speed slider sets
   its fade (firmware v1.2; `speedHint` in `rgbEffectMetadata`; v1.1 ignores
   it). White Balance (firmware v1.2, GET/SET_RGB_WHITE_BALANCE 0xE9 / 0xEA):
-  R, G, B gain sliders (255 = unchanged) with "Show white" (white Solid
-  Color, the previous lighting kept in the tab and put back by "Back to my
+  "Color Calibration": R, G, B gain sliders (255 = unchanged), nine test
+  colours (White, Red, Green, Blue, Yellow, Cyan, Magenta, Orange, Purple;
+  each lights every key as Solid Color in it at the current brightness, the
+  lighting before the first one kept in the tab and put back by "Back to my
   effect") and Reset; hidden when the firmware does not answer. Same idea
   as OpenMAD's colour calibration, done in the firmware so every effect is
   corrected. `src/lib/libhmk/rgb.ts`,

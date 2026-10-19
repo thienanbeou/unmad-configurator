@@ -112,11 +112,17 @@ await shot("02-lighting")
 report.lightingText = await evaluate(
   `document.body.innerText.includes("Rainbow Pinwheels") && document.body.innerText.includes("Brightness")`,
 )
-// White balance: "Show white" switches to white Solid Color, then back
-report.showWhite = await clickText("Show white")
+// Color calibration: a test color switches to Solid Color in it (White, then
+// Red), then "Back to my effect" restores the effect
+report.showWhite = await clickText("White")
 await sleep(1500)
 report.whiteShown = await evaluate(
-  `document.querySelector("#rgb-effect").textContent.trim() === "Solid Color"`,
+  `document.querySelector("#rgb-effect").textContent.trim() === "Solid Color" && document.querySelector("#rgb-color").value === "#ffffff"`,
+)
+report.showRed = await clickText("Red")
+await sleep(1500)
+report.redShown = await evaluate(
+  `document.querySelector("#rgb-color").value === "#ff0000" && [...document.querySelectorAll("button[aria-pressed=true]")].some((e) => e.textContent.trim() === "Red")`,
 )
 await shot("02a-white-balance")
 report.backToEffect = await clickText("Back to my effect")
