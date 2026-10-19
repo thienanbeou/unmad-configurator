@@ -65,9 +65,9 @@ this program. If not, see <https://www.gnu.org/licenses/>.
       <div class="grid text-sm text-wrap">
         <span class="font-semibold">Keyboard Switches</span>
         <span class="text-muted-foreground">
-          The stock MAD60 HE switches, for all profiles. Each also has a key in
-          the Special keycodes (on Fn in the stock layout); this page shows
-          whether it is on.
+          Switches from the stock firmware, for all profiles. Each also has a
+          key in the Special keycodes (on Fn in the stock layout); this page
+          shows whether it is on.
         </span>
       </div>
       <div class="grid gap-4 sm:grid-cols-2">
