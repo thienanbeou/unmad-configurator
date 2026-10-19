@@ -11,7 +11,10 @@ Fork of [hmkconf](https://github.com/peppapighs/hmkconf) (upstream `main`
 fork of libhmk (Unmad firmware v1.0 or later). v1.1 adds Mac mode, the Caps
 Lock indicator and its colour, Grave Escape / Repeat Key and 52 effects; on
 v1.0 the effect list shows only its 21 and the Caps colour controls hide,
-while the Mac Mode and Caps switches still show and do nothing. Works with
+while the Mac Mode and Caps switches still show and do nothing. v1.2 adds
+the Layers keys, the layer indicator and Color Calibration; on v1.1 the
+layer colour and Color Calibration controls hide, while the Layers keys and
+the Layer Indicator switch still show and do nothing. Works with
 other libhmk keyboards too; the extra tabs hide themselves where the
 firmware lacks the commands.
 
