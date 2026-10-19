@@ -112,12 +112,17 @@ await shot("02-lighting")
 report.lightingText = await evaluate(
   `document.body.innerText.includes("Rainbow Pinwheels") && document.body.innerText.includes("Brightness")`,
 )
-report.effectOptions = await evaluate(
-  `document.querySelector("#rgb-effect")?.options.length ?? 0`,
+// Effect picker: open it, count the effects, pick Custom
+report.openPicker = await evaluate(
+  `(() => { const t = document.querySelector("#rgb-effect"); if (!t) return false; t.click(); return true })()`,
 )
-// Switch to Custom and back through the real select
+await sleep(1000)
+await shot("02b-effect-picker")
+report.effectOptions = await evaluate(
+  `document.querySelectorAll("[data-slot=popover-content] button[aria-pressed]").length`,
+)
 report.setCustom = await evaluate(
-  `(() => { const s = document.querySelector("#rgb-effect"); if (!s) return false; s.value = "1"; s.dispatchEvent(new Event("change", { bubbles: true })); return true })()`,
+  `(() => { const b = [...document.querySelectorAll("[data-slot=popover-content] button")].find((e) => e.textContent.trim() === "Custom (per-key colors)"); if (!b) return false; b.click(); return true })()`,
 )
 await sleep(3000)
 report.customUi = await evaluate(

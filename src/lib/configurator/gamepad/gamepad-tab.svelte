@@ -27,7 +27,7 @@ this program. If not, see <https://www.gnu.org/licenses/>.
 </script>
 
 <KeyboardEditor.Root {...props}>
-  <KeyboardEditor.Pane>
+  <KeyboardEditor.Pane keyboard>
     <GamepadKeyboard />
     <GamepadMenubar />
   </KeyboardEditor.Pane>

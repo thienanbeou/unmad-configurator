@@ -15,6 +15,7 @@ this program. If not, see <https://www.gnu.org/licenses/>.
 
 <!-- MAD60 HE fork: lighting (libhmk src/rgb.c, commands 0xE0-0xE3, 0xE7-0xE8) -->
 <script lang="ts">
+  import { ChevronDownIcon } from "@lucide/svelte"
   import AreaSelect from "$lib/components/area-select.svelte"
   import CommitSlider from "$lib/components/commit-slider.svelte"
   import FixedScrollArea from "$lib/components/fixed-scroll-area.svelte"
@@ -23,6 +24,7 @@ this program. If not, see <https://www.gnu.org/licenses/>.
   import * as KeycodeButton from "$lib/components/keycode-button"
   import { Button } from "$lib/components/ui/button"
   import * as Empty from "$lib/components/ui/empty"
+  import * as Popover from "$lib/components/ui/popover"
   import {
     hexToRgb,
     HMK_RGB_EFFECT_CUSTOM,
@@ -33,7 +35,7 @@ this program. If not, see <https://www.gnu.org/licenses/>.
     rgbToHueSat,
     type HMK_RgbColor,
   } from "$lib/libhmk/rgb"
-  import { setToIntervals, type WithoutChildren } from "$lib/utils"
+  import { cn, setToIntervals, type WithoutChildren } from "$lib/utils"
   import { ToggleGroup } from "bits-ui"
   import type { ComponentProps } from "svelte"
   import { SvelteSet } from "svelte/reactivity"
@@ -69,6 +71,30 @@ this program. If not, see <https://www.gnu.org/licenses/>.
     rgb ? rgbToHex(hsvToRgb(rgb.hue, rgb.sat, 255)) : "#000000",
   )
 
+  // Effect picker: every effect at once, grouped by name (first match wins,
+  // the rest are Basic)
+  let effectsOpen = $state(false)
+  const effectGroups = $derived.by(() => {
+    const groups = [
+      { title: "Basic", match: null },
+      { title: "Bands", match: /^Band/ },
+      {
+        title: "Rainbows and cycles",
+        match: /Cycle|Rainbow|Beacon|Riverflow|Flower/,
+      },
+      { title: "Rain, pixels and stars", match: /Rain|Pixel|Starlight/ },
+      { title: "React to typing", match: /Reactive|splash|Heatmap/i },
+    ].map((g) => ({ ...g, effects: [] as typeof rgbEffectMetadata }))
+    for (const m of rgbEffectMetadata) {
+      if (!rgb || m.effect >= rgb.numEffects) continue
+      const group =
+        groups.find((g) => g.match?.test(m.title)) ??
+        groups.find((g) => g.match === null)!
+      group.effects.push(m)
+    }
+    return groups.filter((g) => g.effects.length > 0)
+  })
+
   function setKeyColors(color: HMK_RgbColor) {
     return Promise.all(
       setToIntervals(keys).map(([offset, len]) =>
@@ -81,7 +107,7 @@ this program. If not, see <https://www.gnu.org/licenses/>.
 <svelte:document onmouseup={() => (isDragging = false)} />
 
 <KeyboardEditor.Root {...props}>
-  <KeyboardEditor.Pane>
+  <KeyboardEditor.Pane keyboard>
     <ToggleGroup.Root
       bind:value={() => [...keys].map(String), () => {}}
       type="multiple"
@@ -179,19 +205,48 @@ this program. If not, see <https://www.gnu.org/licenses/>.
                   QMK RGB Matrix effects.
                 </span>
               </label>
-              <select
-                id="rgb-effect"
-                class="h-9 w-72 rounded-md border bg-background px-2 text-sm"
-                value={String(rgb.effect)}
-                onchange={(e) =>
-                  rgbQuery.set({
-                    data: { ...rgb, effect: Number(e.currentTarget.value) },
-                  })}
-              >
-                {#each rgbEffectMetadata.filter((m) => m.effect < rgb.numEffects) as { effect, title } (effect)}
-                  <option value={String(effect)}>{title}</option>
-                {/each}
-              </select>
+              <Popover.Root bind:open={effectsOpen}>
+                <Popover.Trigger
+                  id="rgb-effect"
+                  class="flex h-9 w-72 items-center justify-between gap-2 rounded-md border bg-background px-3 text-sm"
+                >
+                  {effect?.title ?? `Effect ${rgb.effect}`}
+                  <ChevronDownIcon class="size-4 opacity-50" />
+                </Popover.Trigger>
+                <Popover.Content
+                  align="start"
+                  class="max-h-[calc(var(--bits-popover-content-available-height)-1rem)] w-[min(48rem,calc(100vw-2rem))] overflow-y-auto"
+                >
+                  {#each effectGroups as { title, effects } (title)}
+                    <div class="flex flex-col gap-1">
+                      <span class="text-xs font-medium text-muted-foreground">
+                        {title}
+                      </span>
+                      <div class="grid grid-cols-2 gap-1 md:grid-cols-3">
+                        {#each effects as m (m.effect)}
+                          <button
+                            aria-pressed={m.effect === rgb.effect}
+                            class={cn(
+                              "rounded-md px-2 py-1.5 text-left hover:bg-accent hover:text-accent-foreground",
+                              m.effect === rgb.effect &&
+                                "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground",
+                            )}
+                            onclick={() => {
+                              rgbQuery.set({
+                                data: { ...rgb, effect: m.effect },
+                              })
+                              effectsOpen = false
+                            }}
+                            type="button"
+                          >
+                            {m.title}
+                          </button>
+                        {/each}
+                      </div>
+                    </div>
+                  {/each}
+                </Popover.Content>
+              </Popover.Root>
             </div>
             <CommitSlider
               bind:committed={

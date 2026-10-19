@@ -17,10 +17,32 @@ this program. If not, see <https://www.gnu.org/licenses/>.
   import type { ComponentProps } from "svelte"
   import { ResizablePane } from "../ui/resizable"
 
-  const { children, ...props }: ComponentProps<typeof ResizablePane> = $props()
+  const {
+    children,
+    keyboard = false,
+    ...props
+  }: ComponentProps<typeof ResizablePane> & {
+    // The pane that shows the keyboard (the other one gets the rest)
+    keyboard?: boolean
+  } = $props()
+
+  // Give the keyboard about 300 px (35-55% of the window below the header):
+  // big screens leave more room for the settings, laptops keep the keyboard
+  // readable. Dragging the handle overrides it (saved by the pane group).
+  const keyboardSize =
+    typeof window === "undefined"
+      ? 40
+      : Math.min(
+          55,
+          Math.max(35, Math.round((300 / (window.innerHeight - 56)) * 100)),
+        )
 </script>
 
-<ResizablePane defaultSize={50} minSize={30} {...props}>
+<ResizablePane
+  defaultSize={keyboard ? keyboardSize : 100 - keyboardSize}
+  minSize={30}
+  {...props}
+>
   <div class="flex h-full flex-col">
     {@render children?.()}
   </div>

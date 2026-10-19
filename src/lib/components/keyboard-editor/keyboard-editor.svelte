@@ -25,7 +25,9 @@ this program. If not, see <https://www.gnu.org/licenses/>.
   }: Omit<ComponentProps<typeof ResizablePaneGroup>, "direction"> = $props()
 </script>
 
+<!-- One saved split for every tab (keyboard / settings), kept across reloads -->
 <ResizablePaneGroup
+  autoSaveId="hmk-keyboard-editor"
   direction="vertical"
   class={cn("flex-1", className)}
   {...props}

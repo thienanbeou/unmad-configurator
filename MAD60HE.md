@@ -81,6 +81,13 @@ of a tab, which reloads the page once); after that it is fast.
   inverted) switches, and the keys Grave Escape (`SP_GRAVE_ESCAPE` 0xF3) and
   Repeat Key (`SP_REPEAT_KEY` 0xF4). Stock hmkconf writes the options from
   the fields it knows and would clear these bits.
+- **Layout**: the keyboard pane takes about 300 px (35-55% of the window,
+  `keyboard-editor-pane.svelte`), the settings pane the rest; one dragged
+  split is saved for every tab (`autoSaveId` in `keyboard-editor.svelte`).
+  The "window too small" screen starts below 800 x 480 (was 1024 x 768,
+  which blocked laptops at 125-150% scaling).
+- **Effect picker** (Lighting): all effects in one grouped panel instead of
+  a native select (`effectGroups` in `lighting-tab.svelte`, grouped by name).
 - Upstream bug fixed: Delete inside the advanced key editor cleared slot 0
   (the first advanced key) instead of the open key.
 - Upstream bug fixed: the advanced key editor header showed "Unknown 0x108"

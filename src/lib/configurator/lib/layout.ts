@@ -26,8 +26,10 @@ import {
 import type { Component } from "svelte"
 import type { ConfiguratorTabs } from "../context.svelte"
 
-export const MIN_WINDOW_WIDTH = 1024
-export const MIN_WINDOW_HEIGHT = 768
+// The keyboard scales to its pane, so laptops at 125-150% display scaling
+// (about 1280 x 600 inside the browser) still fit
+export const MIN_WINDOW_WIDTH = 800
+export const MIN_WINDOW_HEIGHT = 480
 
 export type SidebarTabGroup = {
   group: string
