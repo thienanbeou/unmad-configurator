@@ -46,6 +46,7 @@ import type {
   SetMacrosParams,
   SetOptionsParams,
   SetRgbCapsParams,
+  SetRgbIdleParams,
   SetRgbKeyColorsParams,
   SetRgbLayerParams,
   SetRgbParams,
@@ -100,6 +101,7 @@ type DemoKeyboardState = {
   rgbWhiteBalance: HMK_RgbColor
   rgbLayer: HMK_RgbCaps[]
   inUse: HMK_InUse
+  rgbIdle: number
 }
 
 export class DemoKeyboard implements Keyboard {
@@ -120,6 +122,7 @@ export class DemoKeyboard implements Keyboard {
       capsIndicatorDisabled: false,
       layerIndicatorDisabled: false,
       layerIndicatorMode: 0,
+      capsWordBothShifts: false,
     },
     profiles: [...Array(numProfiles)].map((_, i) =>
       structuredClone(defaultProfile(i)),
@@ -136,6 +139,7 @@ export class DemoKeyboard implements Keyboard {
     ],
     // Fewer than the demo board has, so the add buttons show
     inUse: { profiles: 3, layers: 3 },
+    rgbIdle: 0,
   }
 
   async disconnect() {}
@@ -254,6 +258,12 @@ export class DemoKeyboard implements Keyboard {
   }
   async setRgbLayer({ layer, data }: SetRgbLayerParams) {
     this.#state.rgbLayer[layer - 1] = data
+  }
+  async getRgbIdle() {
+    return this.#state.rgbIdle
+  }
+  async setRgbIdle({ data }: SetRgbIdleParams) {
+    this.#state.rgbIdle = data
   }
   async getInUse() {
     return { ...this.#state.inUse }

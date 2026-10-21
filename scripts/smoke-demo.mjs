@@ -221,7 +221,7 @@ await shot("04-advanced-keys")
 report.settings = await clickText("Settings")
 await sleep(3000)
 report.settingsText = await evaluate(
-  `["WASD Swap", "Win Lock", "6KRO Only", "Layer Indicator"].every((t) => document.body.innerText.includes(t))`,
+  `["WASD Swap", "Win Lock", "6KRO Only", "Layer Indicator", "Both Shifts Turn On Caps Word", "Lighting Idle Timeout: Off"].every((t) => document.body.innerText.includes(t))`,
 )
 await shot("05-settings")
 // Remap key picker: the Layers section lists the layer keys (firmware v1.2)
@@ -230,9 +230,25 @@ await sleep(2500)
 report.layersSection = await clickText("Layers")
 await sleep(1500)
 report.layerKeys = await evaluate(
-  `["MO(1)", "TO(1)", "DF(1)", "OSL(1)", "Layer Lock", "Tri Lower", "OS LShift"].filter((t) => ![...document.querySelectorAll("button")].some((b) => b.innerText.trim().replace(/\\s+/g, " ") === t))`,
+  `["MO(1)", "TO(1)", "DF(1)", "OSL(1)", "Layer Lock", "OS LShift"].filter((t) => ![...document.querySelectorAll("button")].some((b) => b.innerText.trim().replace(/\\s+/g, " ") === t))`,
 )
 await shot("05b-layer-keys")
+// Lighting keys and Caps Word (firmware v1.5)
+const openSection = (title) =>
+  evaluate(
+    `(() => { const t = [...document.querySelectorAll("[data-slot=accordion-trigger]")].find((e) => e.textContent.trim() === ${JSON.stringify(title)}); if (!t) return false; if (t.getAttribute("aria-expanded") !== "true") t.click(); return true })()`,
+  )
+report.lightingSection = await openSection("Lighting")
+await sleep(1500)
+report.lightingKeys = await evaluate(
+  `["RGB Toggle", "RGB Next", "Bright Up", "Hue Down", "Speed Up"].filter((t) => ![...document.querySelectorAll("button")].some((b) => b.checkVisibility() && b.innerText.trim().replace(/\\s+/g, " ") === t))`,
+)
+report.specialSection = await openSection("Special")
+await sleep(1500)
+report.capsWordKey = await evaluate(
+  `[...document.querySelectorAll("button")].some((b) => b.checkVisibility() && b.innerText.trim().replace(/\\s+/g, " ") === "Caps Word")`,
+)
+await shot("05b2-lighting-keys")
 // Reset Current Layer asks first; Cancel keeps the keymap
 report.resetAsk = await clickText("Reset Current Layer")
 await sleep(1000)

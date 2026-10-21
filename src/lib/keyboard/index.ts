@@ -67,6 +67,8 @@ export type SetRgbWhiteBalanceParams = SetParams<HMK_RgbColor>
 // many and adds more up to numProfiles / numLayers
 export type HMK_InUse = { profiles: number; layers: number }
 export type SetInUseParams = SetParams<HMK_InUse>
+// Lighting idle timeout in minutes, 0 = never (firmware v1.5)
+export type SetRgbIdleParams = SetParams<number>
 export type SetRgbLayerParams = { layer: number; data: HMK_RgbCaps }
 export type GetGamepadOptionsParams = GetProfileParams
 export type SetGamepadOptionsParams = SetProfileParams<HMK_GamepadOptions>
@@ -125,6 +127,9 @@ export type KeyboardAction = {
   getRgbLayer(): Promise<HMK_RgbCaps[] | null>
   // null: the firmware has no such setting (all in use)
   getInUse(): Promise<HMK_InUse | null>
+  // null: the firmware has no idle timeout
+  getRgbIdle(): Promise<number | null>
+  setRgbIdle(params: SetRgbIdleParams): Promise<void>
   setInUse(params: SetInUseParams): Promise<void>
   setRgbLayer(params: SetRgbLayerParams): Promise<void>
 }

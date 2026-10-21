@@ -26,6 +26,7 @@ import {
   getLayersKeycodes,
   layersKeycodeMetadata,
 } from "./layers"
+import { lightingKeycodeMetadata, lightingKeycodes } from "./lighting"
 import { mediaKeycodeMetadata, mediaKeycodes } from "./media"
 import { mouseKeycodeMetadata, mouseKeycodes } from "./mouse"
 import { getProfilesKeycodes, profilesKeycodeMetadata } from "./profiles"
@@ -35,6 +36,7 @@ export const keycodeCategories = {
   BASIC: "Basic",
   EXTENDED: "Extended",
   SPECIAL: "Special",
+  LIGHTING: "Lighting",
   LAYERS: "Layers",
   PROFILES: "Profiles",
   MEDIA: "Media",
@@ -60,6 +62,7 @@ export const keycodeMetadata: KeycodeMetadata[] = [
   ...basicKeycodeMetadata,
   ...extendedKeycodeMetadata,
   ...specialKeycodeMetadata,
+  ...lightingKeycodeMetadata,
   ...layersKeycodeMetadata,
   ...profilesKeycodeMetadata,
   ...mediaKeycodeMetadata,
@@ -118,6 +121,7 @@ export function getCategorizedKeycodes({
     ["Basic", basicKeycodes],
     ["Extended", extendedKeycodes],
     ["Special", getSpecialKeycodes()],
+    ["Lighting", lightingKeycodes],
     ["Layers", getLayersKeycodes(numLayers)],
     ["Profiles", getProfilesKeycodes(numProfiles)],
     ["Media", mediaKeycodes],

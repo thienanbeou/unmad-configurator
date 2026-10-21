@@ -59,11 +59,13 @@ import { reboot } from "$lib/libhmk/commands/reboot"
 import {
   getRgb,
   getRgbCaps,
+  getRgbIdle,
   getRgbKeyColors,
   getRgbLayer,
   getRgbWhiteBalance,
   setRgb,
   setRgbCaps,
+  setRgbIdle,
   setRgbKeyColors,
   setRgbLayer,
   setRgbWhiteBalance,
@@ -92,6 +94,7 @@ import type {
   SetMacrosParams,
   SetOptionsParams,
   SetRgbCapsParams,
+  SetRgbIdleParams,
   SetRgbKeyColorsParams,
   SetRgbLayerParams,
   SetRgbParams,
@@ -253,6 +256,12 @@ class HMKKeyboard implements Keyboard {
   }
   setRgbLayer(params: SetRgbLayerParams) {
     return setRgbLayer(this.commander, params)
+  }
+  getRgbIdle() {
+    return getRgbIdle(this.commander)
+  }
+  setRgbIdle(params: SetRgbIdleParams) {
+    return setRgbIdle(this.commander, params)
   }
   getInUse() {
     return getInUse(this.commander)

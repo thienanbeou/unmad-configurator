@@ -15,6 +15,7 @@
 
 import type {
   SetRgbCapsParams,
+  SetRgbIdleParams,
   SetRgbKeyColorsParams,
   SetRgbLayerParams,
   SetRgbParams,
@@ -203,5 +204,31 @@ export async function setRgbLayer(
   await commander.sendCommand({
     command: HMK_Command.SET_RGB_LAYER,
     payload: [hue, sat, val, layer],
+  })
+}
+
+/**
+ * Lighting idle timeout in minutes (0 = never), or null when the firmware
+ * cannot set it (older than v1.5)
+ */
+export async function getRgbIdle(commander: Commander): Promise<number | null> {
+  try {
+    const view = await commander.sendCommand({
+      command: HMK_Command.GET_RGB_IDLE,
+      timeout: 1000,
+    })
+    return view.getUint8(0)
+  } catch {
+    return null
+  }
+}
+
+export async function setRgbIdle(
+  commander: Commander,
+  { data }: SetRgbIdleParams,
+) {
+  await commander.sendCommand({
+    command: HMK_Command.SET_RGB_IDLE,
+    payload: [data],
   })
 }

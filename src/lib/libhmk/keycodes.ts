@@ -210,6 +210,19 @@ export enum Keycode {
   SP_PROFILE_SWAP = 0xd2,
   SP_PROFILE_NEXT = 0xd3,
   SP_BOOT = 0xd4,
+  // MAD60 HE fork v1.5: QMK RGB keys and Caps Word
+  SP_RGB_TOGGLE = 0xd5,
+  SP_RGB_NEXT = 0xd6,
+  SP_RGB_PREV = 0xd7,
+  SP_RGB_HUE_UP = 0xd8,
+  SP_RGB_HUE_DOWN = 0xd9,
+  SP_RGB_SAT_UP = 0xda,
+  SP_RGB_SAT_DOWN = 0xdb,
+  SP_RGB_VAL_UP = 0xdc,
+  SP_RGB_VAL_DOWN = 0xdd,
+  SP_RGB_SPEED_UP = 0xde,
+  SP_RGB_SPEED_DOWN = 0xdf,
+  SP_CAPS_WORD = 0xe0,
 
   // MAD60 HE fork: stock switches, each toggles a firmware option bit
   SP_WASD_SWAP = 0xf0,

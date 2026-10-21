@@ -35,6 +35,7 @@ export async function getOptions(commander: Commander): Promise<HMK_Options> {
     capsIndicatorDisabled: ((optionsRaw >> 7) & 1) !== 0,
     layerIndicatorDisabled: ((optionsRaw >> 8) & 1) !== 0,
     layerIndicatorMode: (optionsRaw >> 9) & 3,
+    capsWordBothShifts: ((optionsRaw >> 11) & 1) !== 0,
   }
 }
 
@@ -52,6 +53,7 @@ export async function setOptions(
       capsIndicatorDisabled,
       layerIndicatorDisabled,
       layerIndicatorMode,
+      capsWordBothShifts,
     },
   }: SetOptionsParams,
 ) {
@@ -65,7 +67,8 @@ export async function setOptions(
     ((macModeEnabled ? 1 : 0) << 6) |
     ((capsIndicatorDisabled ? 1 : 0) << 7) |
     ((layerIndicatorDisabled ? 1 : 0) << 8) |
-    ((layerIndicatorMode & 3) << 9)
+    ((layerIndicatorMode & 3) << 9) |
+    ((capsWordBothShifts ? 1 : 0) << 11)
   await commander.sendCommand({
     command: HMK_Command.SET_OPTIONS,
     // u16 little endian (bit 8 and up need the second byte)

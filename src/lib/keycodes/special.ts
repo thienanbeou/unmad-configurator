@@ -230,6 +230,14 @@ export const specialKeycodeMetadata: KeycodeMetadata[] = [
     webCodes: [],
     category: "Special",
   },
+  {
+    name: "Caps\nWord",
+    tooltip:
+      "Caps Word: CAPITALS and - as _ until a key that ends the word (Space, Enter, punctuation) or 5 s without typing. The Caps Lock key lights while it is on. Needs firmware v1.5 or later.",
+    keycode: Keycode.SP_CAPS_WORD,
+    webCodes: [],
+    category: "Special",
+  },
 ]
 
 export function getSpecialKeycodes() {
@@ -258,5 +266,6 @@ export function getSpecialKeycodes() {
     Keycode.SP_MAC_MODE,
     Keycode.SP_GRAVE_ESCAPE,
     Keycode.SP_REPEAT_KEY,
+    Keycode.SP_CAPS_WORD,
   ]
 }

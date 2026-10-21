@@ -16,6 +16,7 @@
 import {
   keyboardContext,
   type SetRgbCapsParams,
+  type SetRgbIdleParams,
   type SetRgbKeyColorsParams,
   type SetRgbLayerParams,
   type SetRgbParams,
@@ -36,6 +37,9 @@ export class RgbQuery {
   // Layer indicator colours from layer 1 on, null when the firmware cannot
   // set them (one entry: firmware v1.2, one colour for every layer)
   layer: ResourceReturn<HMK_RgbCaps[] | null>
+  // Lighting idle timeout in minutes (0 = never), null when the firmware
+  // cannot set it
+  idle: ResourceReturn<number | null>
 
   #keyboard = keyboardContext.get()
 
@@ -59,6 +63,11 @@ export class RgbQuery {
       () => !!this.rgb.current,
       (supported) =>
         supported ? this.#keyboard.getRgbLayer() : Promise.resolve(null),
+    )
+    this.idle = resource(
+      () => !!this.rgb.current,
+      (supported) =>
+        supported ? this.#keyboard.getRgbIdle() : Promise.resolve(null),
     )
     this.whiteBalance = resource(
       () => !!this.rgb.current,
@@ -92,6 +101,15 @@ export class RgbQuery {
       optimisticFn: (current) =>
         current?.map((c, i) => (i === layer - 1 ? data : c)) ?? current,
       updateFn: () => this.#keyboard.setRgbLayer(params),
+    })
+  }
+
+  async setIdle(params: SetRgbIdleParams) {
+    const { data } = params
+    await optimisticUpdate({
+      resource: this.idle,
+      optimisticFn: (current) => (current === null ? current : data),
+      updateFn: () => this.#keyboard.setRgbIdle(params),
     })
   }
 

@@ -14,6 +14,7 @@ this program. If not, see <https://www.gnu.org/licenses/>.
 -->
 
 <script lang="ts">
+  import CommitSlider from "$lib/components/commit-slider.svelte"
   import FixedScrollArea from "$lib/components/fixed-scroll-area.svelte"
   import Switch from "$lib/components/switch.svelte"
   import { Button } from "$lib/components/ui/button"
@@ -23,6 +24,7 @@ this program. If not, see <https://www.gnu.org/licenses/>.
   import type { HTMLAttributes } from "svelte/elements"
   import { optionsQueryContext } from "../queries/options-query.svelte"
   import { profileQueryContext } from "../queries/profile-query.svelte"
+  import { rgbQueryContext } from "../queries/rgb-query.svelte"
 
   const {
     class: className,
@@ -39,6 +41,9 @@ this program. If not, see <https://www.gnu.org/licenses/>.
   const profileQuery = profileQueryContext.get()
   const optionsQuery = optionsQueryContext.get()
   const { current: options } = $derived(optionsQuery.options)
+  // MAD60 HE fork v1.5: lighting idle timeout (null on older firmware)
+  const rgbQuery = rgbQueryContext.get()
+  const { current: idle } = $derived(rgbQuery.idle)
 </script>
 
 <div
@@ -139,6 +144,28 @@ this program. If not, see <https://www.gnu.org/licenses/>.
       title="Layer Indicator"
       description="While a layer other than 0 is on, light the keys that do something there. Color and brightness are in the Lighting tab. Needs firmware v1.2 or later."
     />
+    <Switch
+      bind:checked={
+        () => options?.capsWordBothShifts ?? false,
+        (v) =>
+          options &&
+          optionsQuery.set({ data: { ...options, capsWordBothShifts: v } })
+      }
+      id="caps-word-both-shifts"
+      title="Both Shifts Turn On Caps Word"
+      description="Pressing Left and Right Shift together starts Caps Word (CAPITALS until the end of the word). The Caps Word key in the Special keys does it too. Needs firmware v1.5 or later."
+    />
+    {#if idle !== null && idle !== undefined}
+      <CommitSlider
+        bind:committed={() => idle, (v) => rgbQuery.setIdle({ data: v })}
+        description="Turn the lighting off after this long without a key press; any key turns it back on. Needs firmware v1.5 or later."
+        display={(v) => (v === 0 ? "Off" : `${v} min`)}
+        min={0}
+        max={60}
+        step={1}
+        title="Lighting Idle Timeout"
+      />
+    {/if}
     <div class="flex flex-col gap-2">
       <div class="grid text-sm text-wrap">
         <span class="font-semibold">Restart Keyboard</span>
