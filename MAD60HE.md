@@ -174,6 +174,11 @@ of a tab, which reloads the page once); after that it is fast.
   (Cancel keeps the keymap), Advanced Keys (Tap Dance create /
   bind, re-clicking a step's selected action keeps it) and Settings; results in OUTDIR/report.json. Copy the CDP part of
   smoke-demo.mjs for a one-off check.
+- `node scripts/smoke-import.mjs URL OUTDIR` (same URL): a profile exported
+  with fewer layers / advanced keys / macro steps than the keyboard has
+  (Unmad v1.3 and older exports into v1.4) imports and is padded (missing
+  layers transparent, slots empty); a bigger one is refused, nothing
+  written.
 - `node scripts/smoke-delete.mjs URL OUTDIR` (same URL): deleting an
   advanced key from its own editor removes that key, not slot 0 (an upstream
   bug fixed in the fork: the Delete dialog read the open key's index after

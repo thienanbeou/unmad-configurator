@@ -16,7 +16,9 @@
 import { keyboardContext } from "$lib/keyboard"
 import { keyboardConfigSchema } from "$lib/keyboard/config"
 import { HMK_FIRMWARE_MAX_VERSION } from "$lib/libhmk"
-import { HMK_AKType } from "$lib/libhmk/advanced-keys"
+import { defaultAdvancedKey, HMK_AKType } from "$lib/libhmk/advanced-keys"
+import { Keycode } from "$lib/libhmk/keycodes"
+import { defaultMacroNode } from "$lib/libhmk/macro"
 import { SvelteDate } from "svelte/reactivity"
 import { globalStateContext } from "../context.svelte"
 import { actuationQueryContext } from "../queries/actuation-query.svelte"
@@ -59,11 +61,14 @@ export class KeyboardConfig {
       return
     }
 
+    // MAD60 HE fork: a profile from a smaller build (Unmad v1.3 and older: 4
+    // layers, 32 advanced keys, 128 macro nodes) fits and is padded in
+    // setConfig; a bigger one does not
     if (keymap !== undefined) {
-      if (keymap.length !== numLayers) {
+      if (keymap.length > numLayers) {
         ctx.addIssue({
           code: "custom",
-          message: `Expected keymap to have exactly ${numLayers} layers.`,
+          message: `The profile has ${keymap.length} layers; this keyboard has room for ${numLayers}.`,
         })
       }
       if (keymap.some((layer) => layer.length !== numKeys)) {
@@ -82,10 +87,10 @@ export class KeyboardConfig {
     }
 
     if (advancedKeys !== undefined) {
-      if (advancedKeys.length !== numAdvancedKeys) {
+      if (advancedKeys.length > numAdvancedKeys) {
         ctx.addIssue({
           code: "custom",
-          message: `Expected advanced keys to have exactly ${numAdvancedKeys} entries.`,
+          message: `The profile has ${advancedKeys.length} advanced key slots; this keyboard has room for ${numAdvancedKeys}.`,
         })
       }
       if (
@@ -103,10 +108,10 @@ export class KeyboardConfig {
       }
     }
 
-    if (macros !== undefined && macros.length !== numMacroNodes) {
+    if (macros !== undefined && macros.length > numMacroNodes) {
       ctx.addIssue({
         code: "custom",
-        message: `Expected macros to have exactly ${numMacroNodes} entries.`,
+        message: `The profile has ${macros.length} macro steps; this keyboard has room for ${numMacroNodes}.`,
       })
     }
 
@@ -158,6 +163,19 @@ export class KeyboardConfig {
       },
     } = this.#schema.parse(config)
     const shouldRefetch = this.#profile === profile
+    // A smaller profile: the missing layers transparent, the missing slots
+    // empty
+    const { numLayers, numKeys, numAdvancedKeys, numMacroNodes } =
+      this.#keyboard.metadata
+    while (keymap && keymap.length < numLayers) {
+      keymap.push(Array(numKeys).fill(Keycode.KC_TRANSPARENT))
+    }
+    while (advancedKeys && advancedKeys.length < numAdvancedKeys) {
+      advancedKeys.push(defaultAdvancedKey)
+    }
+    while (macros && macros.length < numMacroNodes) {
+      macros.push(defaultMacroNode)
+    }
 
     if (keymap !== undefined) {
       await Promise.all(
