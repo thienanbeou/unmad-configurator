@@ -16,7 +16,10 @@ the Layers keys, the layer indicator and Color Calibration; on v1.1 the
 layer colour and Color Calibration controls hide, while the Layers keys and
 the Layer Indicator switch still show and do nothing. v1.3 adds a layer
 indicator colour per layer and its modes; on v1.2 one colour shows and the
-mode buttons hide. Works with
+mode buttons hide. v1.4 adds the profiles / layers in use (add, remove,
+N/8); v1.5 the Lighting keys, Caps Word, the Both Shifts switch and the
+Lighting Idle Timeout (hidden on older firmware; the keys and the switch
+show but do nothing there). Works with
 other libhmk keyboards too; the extra tabs hide themselves where the
 firmware lacks the commands.
 
@@ -128,6 +131,16 @@ of a tab, which reloads the page once); after that it is fast.
   profile without its advanced keys, a profile to its defaults); the key list's Layers and
   Profiles keys, and the layer indicator colours, follow the counts in use.
   Older firmware: no buttons, every profile and layer shown as before.
+- **v1.5 keys and settings**: a "Lighting" section in the key list
+  (`src/lib/keycodes/lighting.ts`, 0xD5-0xDF: RGB toggle, next / previous,
+  hue / saturation / brightness / speed up and down; Shift reverses) and
+  Caps Word (0xE0) in Special; Settings: "Both Shifts Turn On Caps Word"
+  (option bit 11) and "Lighting Idle Timeout" (GET/SET_RGB_IDLE 0xEF / 0xF0,
+  Off or 1-60 min). Hue and saturation have no sliders on purpose: the
+  Lighting tab's Color picker sets exactly those two.
+- **Advanced Keys: the layer can change while creating** (`context.svelte.ts`
+  `setLayer`): the new key's type stays, its key picks start over on the
+  new layer; editing an existing one keeps its layer.
 - **Lighting folds**: Color Calibration, Caps Lock Indicator and Layer
   Indicator are closed accordion sections (`ui/accordion`; the items get
   `-mx-1` / `px-1` because the content clips for its animation and cut off
