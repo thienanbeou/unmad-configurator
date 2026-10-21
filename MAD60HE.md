@@ -119,8 +119,13 @@ of a tab, which reloads the page once); after that it is fast.
   which blocked laptops at 125-150% scaling).
 - **Profiles and layers in use** (firmware v1.4, GET/SET_IN_USE 0xED /
   0xEE, `in-use-query.svelte.ts`): the layer buttons (`layer-select.svelte`,
-  Remap and Advanced Keys) get a "+" and the profile picker / Profiles tab
-  an "Add Profile" until 8 (the firmware's room); the key list's Layers and
+  Remap and Advanced Keys) get a "+", a trash and an "N/8" count; the
+  profile picker / Profiles tab an "Add Profile", the Profiles tab also
+  "Remove Profile N" and "N/8". Only the last layer / profile can be
+  removed (a middle one would renumber the layer / profile keys above it;
+  the dialogs say so), never layer 0 / profile 0, after a confirmation; the
+  firmware clears what is taken out (a layer to transparent in every
+  profile without its advanced keys, a profile to its defaults); the key list's Layers and
   Profiles keys, and the layer indicator colours, follow the counts in use.
   Older firmware: no buttons, every profile and layer shown as before.
 - **Lighting folds**: Color Calibration, Caps Lock Indicator and Layer
