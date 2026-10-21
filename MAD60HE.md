@@ -30,7 +30,7 @@ firmware lacks the commands.
     npm run dev          # alternative: http://localhost:5173
 
 Open `build/index.html` in Chrome / Edge / Brave (WebHID; connecting from
-file:// works). The build is one ~1.75 MB file
+file:// works). The build is one ~1.8 MB file
 with all JS, CSS, fonts and images inlined (svelte.config.js: adapter-static
 3, `bundleStrategy: "inline"`, hash routes `#/demo`; vite.config.ts:
 `assetsInlineLimit`, without which the screenshots and fonts were looked up
@@ -109,7 +109,8 @@ of a tab, which reloads the page once); after that it is fast.
   0xF7. Layer Indicator switch in Settings (option bit 8, stored inverted)
   and its colour / brightness in Lighting (GET/SET_RGB_LAYER 0xEB / 0xEC,
   hidden when the firmware does not answer, grayed out while the switch is
-  off). Firmware v1.3: a colour per layer (Layer 1 / 2 / 3 buttons; byte 1
+  off). Firmware v1.3: a colour per layer (a button per layer in use from
+  layer 1, up to 7 on v1.4; byte 1
   of GET and byte 4 of SET carry the layer, 0 = layer 1; `getRgbLayer`
   finds per-layer firmware by asking for layer `numLayers`, which v1.3
   refuses and v1.2 answers) and "Other Keys" (option bits 9-10,
@@ -183,9 +184,13 @@ of a tab, which reloads the page once); after that it is fast.
   to my effect, layer 2's colour, the Whole board mode, the effect
   picker with all 52 effects, reopened at 1280 x 560 it must start at the
   current effect, Custom), the Remap key list's Layers section (MO, TO, DF,
-  OSL, Layer Lock, Tri Lower, OS LShift), Reset Current Layer's dialog
-  (Cancel keeps the keymap), Advanced Keys (Tap Dance create /
-  bind, re-clicking a step's selected action keeps it) and Settings; results in OUTDIR/report.json. Copy the CDP part of
+  OSL, Layer Lock, OS LShift; Tri Layer keys need 4+ layers in use, the demo
+  starts at 3), the Lighting section and Caps Word (v1.5), Reset Current
+  Layer's dialog (Cancel keeps the keymap), the layer "+" / trash / N/4 and
+  Add / Remove Profile with their dialogs (the demo has room for 4 x 4),
+  Advanced Keys (a Tap Dance created on layer 1 after switching layers
+  mid-create, bind, re-clicking a step's selected action keeps it) and
+  Settings (incl. Both Shifts and the Lighting Idle Timeout); results in OUTDIR/report.json. Copy the CDP part of
   smoke-demo.mjs for a one-off check.
 - `node scripts/smoke-import.mjs URL OUTDIR` (same URL): a profile exported
   with fewer layers / advanced keys / macro steps than the keyboard has
