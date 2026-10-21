@@ -66,10 +66,16 @@ export class ConfiguratorAdvancedKeysState {
     this.index = null
     this.create = null
   }
+  // MAD60 HE fork: switching layers while creating keeps the new advanced
+  // key's type and starts its key picks over on that layer (a key picked on
+  // the old one may already have an advanced key on the new one)
   setLayer(layer: number) {
     this.layer = layer
     this.index = null
-    this.create = null
+    if (this.create) {
+      this.create.keys.fill(null)
+      this.create.keyIndex = 0
+    }
   }
   setIndex(index: number | null) {
     this.index = index

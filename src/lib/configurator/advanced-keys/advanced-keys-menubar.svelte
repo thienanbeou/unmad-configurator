@@ -19,12 +19,12 @@ this program. If not, see <https://www.gnu.org/licenses/>.
   import { advancedKeysStateContext } from "../context.svelte"
 
   const advancedKeysState = advancedKeysStateContext.get()
-  const { layer, index, create } = $derived(advancedKeysState)
+  const { layer, index } = $derived(advancedKeysState)
 </script>
 
 <KeyboardEditor.Menubar>
   <LayerSelect
-    disabled={index !== null || create !== null}
+    disabled={index !== null}
     bind:layer={() => layer, (v) => advancedKeysState.setLayer(v)}
   />
   <KeyboardEditor.LayoutDialog />

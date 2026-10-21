@@ -337,12 +337,26 @@ report.td.openCreate = await clickWhere(
   `(e) => e.textContent.trim().startsWith("Tap Dance")`,
 )
 await sleep(2000)
+// The layer can change while creating: the tap dance goes on layer 1
+const pickLayer = (n) =>
+  evaluate(
+    `(() => { const it = [...document.querySelectorAll("[data-slot=toggle-group-item]")].find((e) => e.checkVisibility() && e.textContent.trim() === "${n}"); if (!it || it.disabled) return false; it.click(); return true })()`,
+  )
+// The A key's position (its label differs on layer 1)
+const keyA = await evaluate(
+  `[...document.querySelectorAll("button[aria-pressed]")].findIndex((e) => e.textContent.trim() === "A")`,
+)
+report.td.layer1 = await pickLayer(1)
+await sleep(1000)
+report.td.stillCreating = await evaluate(
+  `[...document.querySelectorAll("button")].some((e) => e.checkVisibility() && e.textContent.trim() === "Continue")`,
+)
 report.td.keyCandidates = await evaluate(
   `[...document.querySelectorAll("button")].filter((e) => e.textContent.trim() === "A").map((e) => ({ disabled: e.disabled, state: e.dataset.state, pressed: e.getAttribute("aria-pressed"), cls: e.className.slice(0, 40) }))`,
 )
 report.td.pickKey = await evaluate(`(() => {
-  const el = [...document.querySelectorAll("button[aria-pressed]")].find((e) => e.textContent.trim() === "A" && !e.disabled)
-  if (!el) return false
+  const el = [...document.querySelectorAll("button[aria-pressed]")][${keyA}]
+  if (!el || el.disabled) return false
   el.click()
   return el.getAttribute("aria-pressed")
 })()`)
@@ -397,6 +411,17 @@ report.td.done = await clickText("Done")
 await sleep(2500)
 report.td.listRow = await evaluate(
   `document.body.innerText.includes("Tap") && document.body.innerText.includes("200ms")`,
+)
+// It is on layer 1: its Edit button (in the list of every layer's advanced
+// keys) switches to its own layer
+await pickLayer(0)
+await sleep(1000)
+report.td.editRow = await evaluate(
+  `(() => { const b = [...document.querySelectorAll("button")].find((e) => e.checkVisibility() && e.textContent.trim() === "Edit"); if (!b) return false; b.click(); return true })()`,
+)
+await sleep(1500)
+report.td.onLayer1 = await evaluate(
+  `[...document.querySelectorAll("[data-slot=toggle-group-item]")].some((e) => e.checkVisibility() && e.dataset.state === "on" && e.textContent.trim() === "1")`,
 )
 await shot("08-tap-dance-list")
 report.errors = errors
