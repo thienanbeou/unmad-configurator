@@ -22,11 +22,13 @@ this program. If not, see <https://www.gnu.org/licenses/>.
   import * as KeyboardEditor from "$lib/components/keyboard-editor"
   import { KeyboardEditorKeyboard } from "$lib/components/keyboard-editor"
   import * as KeycodeButton from "$lib/components/keycode-button"
+  import * as Accordion from "$lib/components/ui/accordion"
   import { Button } from "$lib/components/ui/button"
   import * as Empty from "$lib/components/ui/empty"
   import * as Popover from "$lib/components/ui/popover"
   import {
     hexToRgb,
+    HMK_LAYER_INDICATOR_MODES,
     HMK_RGB_EFFECT_CUSTOM,
     HMK_RGB_EFFECT_SOLID,
     HMK_RGB_STOCK_MAX_BRIGHTNESS,
@@ -71,10 +73,21 @@ this program. If not, see <https://www.gnu.org/licenses/>.
   let testColor = $state<string | null>(null)
   let beforeTest = $state<HMK_RgbConfig | null>(null)
   const { current: keymap } = $derived(keymapQueryContext.get().keymap)
-  const { current: options } = $derived(optionsQueryContext.get().options)
+  const optionsQuery = optionsQueryContext.get()
+  const { current: options } = $derived(optionsQuery.options)
   const capsOff = $derived(options?.capsIndicatorDisabled ?? false)
-  const { current: layerColor } = $derived(rgbQuery.layer)
+  // One colour per layer from layer 1 (a single entry: firmware v1.2, one
+  // colour for every layer and no modes)
+  const { current: layerColors } = $derived(rgbQuery.layer)
+  const perLayer = $derived((layerColors?.length ?? 0) > 1)
+  let layerEdit = $state(1)
+  const layerColor = $derived(
+    layerColors?.[Math.min(layerEdit, layerColors.length) - 1],
+  )
   const layerOff = $derived(options?.layerIndicatorDisabled ?? false)
+  const layerMode = $derived(
+    HMK_LAYER_INDICATOR_MODES[options?.layerIndicatorMode ?? 0],
+  )
   const allKeys = $derived(
     displayLayoutContext.get().displayKeys.map(({ key }) => key),
   )
@@ -312,87 +325,99 @@ this program. If not, see <https://www.gnu.org/licenses/>.
               title="Speed"
             />
             {#if whiteBalance}
-              <div class="flex flex-col gap-2">
-                <div class="grid text-sm">
-                  <span class="font-medium">Color Calibration</span>
-                  <span class="text-muted-foreground">
-                    The LEDs are not color balanced (white can look blue-green).
-                    Pick a test color to light every key in it, then lower the
-                    strongest channels below until it looks right. Start with
-                    White. Applies to every effect.
-                  </span>
-                </div>
-                <div class="flex flex-wrap gap-2">
-                  {#each testColors as [name, hex] (name)}
-                    <Button
-                      aria-pressed={testColor === hex}
-                      class={cn(testColor === hex && "ring-2 ring-primary")}
-                      onclick={() => {
-                        beforeTest ??= { ...rgb }
-                        testColor = hex
-                        const [hue, sat] = rgbToHueSat(hexToRgb(hex))
-                        rgbQuery.set({
-                          data: {
-                            ...rgb,
-                            effect: HMK_RGB_EFFECT_SOLID,
-                            hue,
-                            sat,
-                          },
-                        })
-                      }}
-                      size="sm"
-                      variant="outline"
-                    >
-                      <span
-                        class="size-3 rounded-full border"
-                        style={`background: ${hex}`}
-                      ></span>
-                      {name}
-                    </Button>
-                  {/each}
-                </div>
-                <div class="flex gap-2">
-                  <Button
-                    disabled={!beforeTest}
-                    onclick={() => {
-                      rgbQuery.set({ data: beforeTest! })
-                      beforeTest = null
-                      testColor = null
-                    }}
-                    size="sm"
-                    variant="outline"
+              <Accordion.Root type="single">
+                <Accordion.Item class="-mx-1" value="calibration">
+                  <Accordion.Trigger class="px-1 py-0"
+                    >Color Calibration</Accordion.Trigger
                   >
-                    Back to my effect
-                  </Button>
-                  <Button
-                    disabled={whiteBalance.every((v) => v === 255)}
-                    onclick={() =>
-                      rgbQuery.setWhiteBalance({ data: [255, 255, 255] })}
-                    size="sm"
-                    variant="outline"
-                  >
-                    Reset
-                  </Button>
-                </div>
-              </div>
-              {#each ["Red", "Green", "Blue"] as title, i (title)}
-                <CommitSlider
-                  bind:committed={
-                    () => whiteBalance[i],
-                    (v) =>
-                      rgbQuery.setWhiteBalance({
-                        data: whiteBalance.map((c, j) =>
-                          j === i ? v : c,
-                        ) as HMK_RgbColor,
-                      })
-                  }
-                  display={(v) => (v === 255 ? "255 (full)" : String(v))}
-                  min={0}
-                  max={255}
-                  step={1}
-                  {title}
-                />
-              {/each}
+                  <!-- Room for the buttons' focus / pressed rings: the content clips (animation) -->
+                  <Accordion.Content class="flex flex-col gap-4 px-1 pt-3">
+                    <div class="flex flex-col gap-2">
+                      <div class="grid text-sm">
+                        <span class="text-muted-foreground">
+                          The LEDs are not color balanced (white can look
+                          blue-green). Pick a test color to light every key in
+                          it, then lower the strongest channels below until it
+                          looks right. Start with White. Applies to every
+                          effect.
+                        </span>
+                      </div>
+                      <div class="flex flex-wrap gap-2">
+                        {#each testColors as [name, hex] (name)}
+                          <Button
+                            aria-pressed={testColor === hex}
+                            class={cn(
+                              testColor === hex && "ring-2 ring-primary",
+                            )}
+                            onclick={() => {
+                              beforeTest ??= { ...rgb }
+                              testColor = hex
+                              const [hue, sat] = rgbToHueSat(hexToRgb(hex))
+                              rgbQuery.set({
+                                data: {
+                                  ...rgb,
+                                  effect: HMK_RGB_EFFECT_SOLID,
+                                  hue,
+                                  sat,
+                                },
+                              })
+                            }}
+                            size="sm"
+                            variant="outline"
+                          >
+                            <span
+                              class="size-3 rounded-full border"
+                              style={`background: ${hex}`}
+                            ></span>
+                            {name}
+                          </Button>
+                        {/each}
+                      </div>
+                      <div class="flex gap-2">
+                        <Button
+                          disabled={!beforeTest}
+                          onclick={() => {
+                            rgbQuery.set({ data: beforeTest! })
+                            beforeTest = null
+                            testColor = null
+                          }}
+                          size="sm"
+                          variant="outline"
+                        >
+                          Back to my effect
+                        </Button>
+                        <Button
+                          disabled={whiteBalance.every((v) => v === 255)}
+                          onclick={() =>
+                            rgbQuery.setWhiteBalance({ data: [255, 255, 255] })}
+                          size="sm"
+                          variant="outline"
+                        >
+                          Reset
+                        </Button>
+                      </div>
+                    </div>
+                    {#each ["Red", "Green", "Blue"] as title, i (title)}
+                      <CommitSlider
+                        bind:committed={
+                          () => whiteBalance[i],
+                          (v) =>
+                            rgbQuery.setWhiteBalance({
+                              data: whiteBalance.map((c, j) =>
+                                j === i ? v : c,
+                              ) as HMK_RgbColor,
+                            })
+                        }
+                        display={(v) => (v === 255 ? "255 (full)" : String(v))}
+                        min={0}
+                        max={255}
+                        step={1}
+                        {title}
+                      />
+                    {/each}
+                  </Accordion.Content>
+                </Accordion.Item>
+              </Accordion.Root>
             {/if}
           </FixedScrollArea>
           <FixedScrollArea class="flex flex-col gap-4 border-l p-4">
@@ -439,88 +464,174 @@ this program. If not, see <https://www.gnu.org/licenses/>.
               title="Color range"
             />
             {#if caps}
-              <div class="flex flex-col gap-2">
-                <label class="grid text-sm" for="rgb-caps-color">
-                  <span class="font-medium">Caps Lock Indicator</span>
-                  <span class="text-muted-foreground">
-                    {capsOff
-                      ? "Off: turn the Caps Lock Indicator on in Settings to use it."
-                      : "Color of the Caps Lock key while Caps Lock is on, over any effect. Turn the indicator off in Settings."}
-                  </span>
-                </label>
-                <input
-                  id="rgb-caps-color"
-                  class="h-9 w-24 cursor-pointer rounded-md border disabled:cursor-not-allowed disabled:opacity-50"
-                  disabled={capsOff}
-                  type="color"
-                  value={rgbToHex(hsvToRgb(caps.hue, caps.sat, 255))}
-                  onchange={(e) => {
-                    const [hue, sat] = rgbToHueSat(
-                      hexToRgb(e.currentTarget.value),
-                    )
-                    rgbQuery.setCaps({ data: { ...caps, hue, sat } })
-                  }}
-                />
-              </div>
-              <CommitSlider
-                bind:committed={
-                  () => caps.val,
-                  (v) => rgbQuery.setCaps({ data: { ...caps, val: v } })
-                }
-                description="Brightness of the Caps Lock indicator, separate from the effect's."
-                disabled={capsOff}
-                display={(v) =>
-                  v > HMK_RGB_STOCK_MAX_BRIGHTNESS
-                    ? `${v} (above stock ${HMK_RGB_STOCK_MAX_BRIGHTNESS})`
-                    : String(v)}
-                min={0}
-                max={rgb.maxBrightness}
-                step={1}
-                title="Caps Lock Brightness"
-              />
+              <Accordion.Root type="single">
+                <Accordion.Item class="-mx-1" value="caps">
+                  <Accordion.Trigger class="px-1 py-0"
+                    >Caps Lock Indicator</Accordion.Trigger
+                  >
+                  <Accordion.Content class="flex flex-col gap-4 px-1 pt-3">
+                    <div class="flex flex-col gap-2">
+                      <label class="grid text-sm" for="rgb-caps-color">
+                        <span class="font-medium">Color</span>
+                        <span class="text-muted-foreground">
+                          {capsOff
+                            ? "Off: turn the Caps Lock Indicator on in Settings to use it."
+                            : "Color of the Caps Lock key while Caps Lock is on, over any effect. Turn the indicator off in Settings."}
+                        </span>
+                      </label>
+                      <input
+                        id="rgb-caps-color"
+                        class="h-9 w-24 cursor-pointer rounded-md border disabled:cursor-not-allowed disabled:opacity-50"
+                        disabled={capsOff}
+                        type="color"
+                        value={rgbToHex(hsvToRgb(caps.hue, caps.sat, 255))}
+                        onchange={(e) => {
+                          const [hue, sat] = rgbToHueSat(
+                            hexToRgb(e.currentTarget.value),
+                          )
+                          rgbQuery.setCaps({ data: { ...caps, hue, sat } })
+                        }}
+                      />
+                    </div>
+                    <CommitSlider
+                      bind:committed={
+                        () => caps.val,
+                        (v) => rgbQuery.setCaps({ data: { ...caps, val: v } })
+                      }
+                      description="Brightness of the Caps Lock indicator, separate from the effect's."
+                      disabled={capsOff}
+                      display={(v) =>
+                        v > HMK_RGB_STOCK_MAX_BRIGHTNESS
+                          ? `${v} (above stock ${HMK_RGB_STOCK_MAX_BRIGHTNESS})`
+                          : String(v)}
+                      min={0}
+                      max={rgb.maxBrightness}
+                      step={1}
+                      title="Caps Lock Brightness"
+                    />
+                  </Accordion.Content>
+                </Accordion.Item>
+              </Accordion.Root>
             {/if}
-            {#if layerColor}
-              <div class="flex flex-col gap-2">
-                <label class="grid text-sm" for="rgb-layer-color">
-                  <span class="font-medium">Layer Indicator</span>
-                  <span class="text-muted-foreground">
-                    {layerOff
-                      ? "Off: turn the Layer Indicator on in Settings to use it."
-                      : "While a layer other than 0 is on (Fn held, a layer locked), the keys that do something there light in this color. Turn it off in Settings."}
-                  </span>
-                </label>
-                <input
-                  id="rgb-layer-color"
-                  class="h-9 w-24 cursor-pointer rounded-md border disabled:cursor-not-allowed disabled:opacity-50"
-                  disabled={layerOff}
-                  type="color"
-                  value={rgbToHex(
-                    hsvToRgb(layerColor.hue, layerColor.sat, 255),
-                  )}
-                  onchange={(e) => {
-                    const [hue, sat] = rgbToHueSat(
-                      hexToRgb(e.currentTarget.value),
-                    )
-                    rgbQuery.setLayer({ data: { ...layerColor, hue, sat } })
-                  }}
-                />
-              </div>
-              <CommitSlider
-                bind:committed={
-                  () => layerColor.val,
-                  (v) => rgbQuery.setLayer({ data: { ...layerColor, val: v } })
-                }
-                description="Brightness of the layer indicator, separate from the effect's."
-                disabled={layerOff}
-                display={(v) =>
-                  v > HMK_RGB_STOCK_MAX_BRIGHTNESS
-                    ? `${v} (above stock ${HMK_RGB_STOCK_MAX_BRIGHTNESS})`
-                    : String(v)}
-                min={0}
-                max={rgb.maxBrightness}
-                step={1}
-                title="Layer Indicator Brightness"
-              />
+            {#if layerColors && layerColor}
+              <Accordion.Root type="single">
+                <Accordion.Item class="-mx-1" value="layer">
+                  <Accordion.Trigger class="px-1 py-0"
+                    >Layer Indicator</Accordion.Trigger
+                  >
+                  <Accordion.Content class="flex flex-col gap-4 px-1 pt-3">
+                    <div class="flex flex-col gap-2">
+                      <label class="grid text-sm" for="rgb-layer-color">
+                        <span class="font-medium">Color</span>
+                        <span class="text-muted-foreground">
+                          {layerOff
+                            ? "Off: turn the Layer Indicator on in Settings to use it."
+                            : perLayer
+                              ? "While a layer other than 0 is on (Fn held, a layer locked), the keys bound on it light in that layer's color. Pick a layer to set its color. Turn it off in Settings."
+                              : "While a layer other than 0 is on (Fn held, a layer locked), the keys that do something there light in this color. Turn it off in Settings."}
+                        </span>
+                      </label>
+                      {#if perLayer}
+                        <div class="flex flex-wrap gap-2">
+                          {#each layerColors as c, i (i)}
+                            <Button
+                              aria-pressed={layerEdit === i + 1}
+                              class={cn(
+                                layerEdit === i + 1 && "ring-2 ring-primary",
+                              )}
+                              disabled={layerOff}
+                              onclick={() => (layerEdit = i + 1)}
+                              size="sm"
+                              variant="outline"
+                            >
+                              <span
+                                class="size-3 rounded-full border"
+                                style:background-color={rgbToHex(
+                                  hsvToRgb(c.hue, c.sat, 255),
+                                )}
+                              ></span>
+                              Layer {i + 1}
+                            </Button>
+                          {/each}
+                        </div>
+                      {/if}
+                      <input
+                        id="rgb-layer-color"
+                        class="h-9 w-24 cursor-pointer rounded-md border disabled:cursor-not-allowed disabled:opacity-50"
+                        disabled={layerOff}
+                        type="color"
+                        value={rgbToHex(
+                          hsvToRgb(layerColor.hue, layerColor.sat, 255),
+                        )}
+                        onchange={(e) => {
+                          const [hue, sat] = rgbToHueSat(
+                            hexToRgb(e.currentTarget.value),
+                          )
+                          rgbQuery.setLayer({
+                            layer: layerEdit,
+                            data: { ...layerColor, hue, sat },
+                          })
+                        }}
+                      />
+                    </div>
+                    <CommitSlider
+                      bind:committed={
+                        () => layerColor.val,
+                        (v) =>
+                          rgbQuery.setLayer({
+                            layer: layerEdit,
+                            data: { ...layerColor, val: v },
+                          })
+                      }
+                      description={perLayer
+                        ? `Brightness of layer ${layerEdit}'s indicator, separate from the effect's.`
+                        : "Brightness of the layer indicator, separate from the effect's."}
+                      disabled={layerOff}
+                      display={(v) =>
+                        v > HMK_RGB_STOCK_MAX_BRIGHTNESS
+                          ? `${v} (above stock ${HMK_RGB_STOCK_MAX_BRIGHTNESS})`
+                          : String(v)}
+                      min={0}
+                      max={rgb.maxBrightness}
+                      step={1}
+                      title="Layer Indicator Brightness"
+                    />
+                    {#if perLayer && options}
+                      <div class="flex flex-col gap-2">
+                        <div class="grid text-sm">
+                          <span class="font-medium">Other Keys</span>
+                          <span class="text-muted-foreground">
+                            While a layer is on: {layerMode.description}
+                          </span>
+                        </div>
+                        <div class="flex flex-wrap gap-2">
+                          {#each HMK_LAYER_INDICATOR_MODES as m (m.mode)}
+                            <Button
+                              aria-pressed={layerMode.mode === m.mode}
+                              class={cn(
+                                layerMode.mode === m.mode &&
+                                  "ring-2 ring-primary",
+                              )}
+                              disabled={layerOff}
+                              onclick={() =>
+                                optionsQuery.set({
+                                  data: {
+                                    ...options,
+                                    layerIndicatorMode: m.mode,
+                                  },
+                                })}
+                              size="sm"
+                              variant="outline"
+                            >
+                              {m.title}
+                            </Button>
+                          {/each}
+                        </div>
+                      </div>
+                    {/if}
+                  </Accordion.Content>
+                </Accordion.Item>
+              </Accordion.Root>
             {/if}
             {#if custom}
               <div class="flex flex-col gap-2">

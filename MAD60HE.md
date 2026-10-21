@@ -14,7 +14,9 @@ v1.0 the effect list shows only its 21 and the Caps colour controls hide,
 while the Mac Mode and Caps switches still show and do nothing. v1.2 adds
 the Layers keys, the layer indicator and Color Calibration; on v1.1 the
 layer colour and Color Calibration controls hide, while the Layers keys and
-the Layer Indicator switch still show and do nothing. Works with
+the Layer Indicator switch still show and do nothing. v1.3 adds a layer
+indicator colour per layer and its modes; on v1.2 one colour shows and the
+mode buttons hide. Works with
 other libhmk keyboards too; the extra tabs hide themselves where the
 firmware lacks the commands.
 
@@ -104,13 +106,27 @@ of a tab, which reloads the page once); after that it is fast.
   0xF7. Layer Indicator switch in Settings (option bit 8, stored inverted)
   and its colour / brightness in Lighting (GET/SET_RGB_LAYER 0xEB / 0xEC,
   hidden when the firmware does not answer, grayed out while the switch is
-  off). SET_OPTIONS now sends the options as two bytes (u16 LE); it sent one
+  off). Firmware v1.3: a colour per layer (Layer 1 / 2 / 3 buttons; byte 1
+  of GET and byte 4 of SET carry the layer, 0 = layer 1; `getRgbLayer`
+  finds per-layer firmware by asking for layer `numLayers`, which v1.3
+  refuses and v1.2 answers) and "Other Keys" (option bits 9-10,
+  `HMK_LAYER_INDICATOR_MODES`): Effect, Off, Whole board, Pass-through. SET_OPTIONS now sends the options as two bytes (u16 LE); it sent one
   before, which was enough while every bit sat in the low byte.
 - **Layout**: the keyboard pane takes about 300 px (35-55% of the window,
   `keyboard-editor-pane.svelte`), the settings pane the rest; one dragged
   split is saved for every tab (`autoSaveId` in `keyboard-editor.svelte`).
   The "window too small" screen starts below 800 x 480 (was 1024 x 768,
   which blocked laptops at 125-150% scaling).
+- **Lighting folds**: Color Calibration, Caps Lock Indicator and Layer
+  Indicator are closed accordion sections (`ui/accordion`; the items get
+  `-mx-1` / `px-1` because the content clips for its animation and cut off
+  the buttons' rings).
+- **Confirmations**: Reset Current Layer asks first (dialog, like Factory
+  Reset, whose text now lists what a factory reset drops). After a factory
+  reset the Caps, white balance and layer colours are read again.
+- **Wrench** (layout options, `keyboard-editor-layout-dialog.svelte`) is
+  hidden on keyboards without layout options (the MAD60 HE has none; it
+  opened an empty box).
 - **Effect picker** (Lighting): all effects in one grouped panel instead of
   a native select (`effectGroups` in `lighting-tab.svelte`, grouped by name).
   It opens scrolled to the current effect, with focus on it
@@ -138,11 +154,13 @@ of a tab, which reloads the page once); after that it is fast.
   default Windows install path is set at the top). `URL` = the file build
   `file:///<checkout>/build/index.html#/demo` (after `npm run build`; no
   priming needed) or `npx vite dev --port 5199` with
-  `http://localhost:5199/#/demo`. smoke-demo covers the Lighting tab (Color
-  Calibration test colours White and Red, Back to my effect, the effect
+  `http://localhost:5199/#/demo`. smoke-demo covers the Lighting tab (the
+  folds closed at first, Color Calibration test colours White and Red, Back
+  to my effect, layer 2's colour, the Whole board mode, the effect
   picker with all 52 effects, reopened at 1280 x 560 it must start at the
   current effect, Custom), the Remap key list's Layers section (MO, TO, DF,
-  OSL, Layer Lock, Tri Lower, OS LShift), Advanced Keys (Tap Dance create /
+  OSL, Layer Lock, Tri Lower, OS LShift), Reset Current Layer's dialog
+  (Cancel keeps the keymap), Advanced Keys (Tap Dance create /
   bind, re-clicking a step's selected action keeps it) and Settings; results in OUTDIR/report.json. Copy the CDP part of
   smoke-demo.mjs for a one-off check.
 - `node scripts/smoke-delete.mjs URL OUTDIR` (same URL): deleting an

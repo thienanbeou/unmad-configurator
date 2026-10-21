@@ -73,6 +73,9 @@ export class ProfileQuery {
     this.#optionsQuery.options.refetch()
     this.#rgbQuery.rgb.refetch()
     this.#rgbQuery.keyColors.refetch()
+    this.#rgbQuery.caps.refetch()
+    this.#rgbQuery.whiteBalance.refetch()
+    this.#rgbQuery.layer.refetch()
   }
   resetProfile({ profile }: ResetProfileParams) {
     this.#keyboard.resetProfile({ profile })

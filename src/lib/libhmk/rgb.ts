@@ -42,6 +42,32 @@ export type HMK_RgbCaps = { hue: number; sat: number; val: number }
 // The stock MAD60 HE firmware never went above this brightness
 export const HMK_RGB_STOCK_MAX_BRIGHTNESS = 210
 
+// Layer indicator: what the keys not bound on the layer show (firmware v1.3,
+// option bits 9-10)
+export const HMK_LAYER_INDICATOR_MODES = [
+  {
+    mode: 0,
+    title: "Effect",
+    description: "The other keys keep the effect.",
+  },
+  {
+    mode: 1,
+    title: "Off",
+    description: "The other keys go dark, so the layer reads at a glance.",
+  },
+  {
+    mode: 2,
+    title: "Whole board",
+    description: "Every key lights in the layer's color.",
+  },
+  {
+    mode: 3,
+    title: "Pass-through",
+    description:
+      "Transparent keys light too when the layer below gives them a key; only keys that do nothing keep the effect.",
+  },
+] as const
+
 export const HMK_RGB_EFFECT_CUSTOM = 1
 export const HMK_RGB_EFFECT_SOLID = 2
 

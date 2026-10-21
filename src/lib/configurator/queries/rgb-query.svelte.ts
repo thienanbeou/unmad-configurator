@@ -33,8 +33,9 @@ export class RgbQuery {
   caps: ResourceReturn<HMK_RgbCaps | null>
   // White balance [r, g, b], null when the firmware cannot set it
   whiteBalance: ResourceReturn<HMK_RgbColor | null>
-  // Layer indicator colour, null when the firmware cannot set it
-  layer: ResourceReturn<HMK_RgbCaps | null>
+  // Layer indicator colours from layer 1 on, null when the firmware cannot
+  // set them (one entry: firmware v1.2, one colour for every layer)
+  layer: ResourceReturn<HMK_RgbCaps[] | null>
 
   #keyboard = keyboardContext.get()
 
@@ -85,10 +86,11 @@ export class RgbQuery {
   }
 
   async setLayer(params: SetRgbLayerParams) {
-    const { data } = params
+    const { layer, data } = params
     await optimisticUpdate({
       resource: this.layer,
-      optimisticFn: (current) => (current ? data : current),
+      optimisticFn: (current) =>
+        current?.map((c, i) => (i === layer - 1 ? data : c)) ?? current,
       updateFn: () => this.#keyboard.setRgbLayer(params),
     })
   }

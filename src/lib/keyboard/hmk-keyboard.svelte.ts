@@ -91,9 +91,9 @@ import type {
   SetOptionsParams,
   SetRgbCapsParams,
   SetRgbKeyColorsParams,
+  SetRgbLayerParams,
   SetRgbParams,
   SetRgbWhiteBalanceParams,
-  SetRgbLayerParams,
   SetTickRateParams,
 } from "."
 import { Commander } from "./commander"
@@ -247,7 +247,7 @@ class HMKKeyboard implements Keyboard {
     return setRgbWhiteBalance(this.commander, params)
   }
   getRgbLayer() {
-    return getRgbLayer(this.commander)
+    return getRgbLayer(this.commander, this.metadata.numLayers)
   }
   setRgbLayer(params: SetRgbLayerParams) {
     return setRgbLayer(this.commander, params)

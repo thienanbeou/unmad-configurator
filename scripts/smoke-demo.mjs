@@ -114,6 +114,12 @@ report.lightingText = await evaluate(
 )
 // Color calibration: a test color switches to Solid Color in it (White, then
 // Red), then "Back to my effect" restores the effect
+// The calibration and indicators are folded: closed at first, open on a click
+report.foldedAtStart = await evaluate(
+  `![...document.querySelectorAll("#rgb-layer-color, #rgb-caps-color, button")].some((e) => e.checkVisibility() && (e.tagName === "INPUT" || e.textContent.trim() === "Back to my effect"))`,
+)
+report.openCalibration = await clickText("Color Calibration")
+await sleep(1000)
 report.showWhite = await clickText("White")
 await sleep(1500)
 report.whiteShown = await evaluate(
@@ -130,6 +136,29 @@ await sleep(1500)
 report.effectRestored = await evaluate(
   `document.querySelector("#rgb-effect").textContent.trim() === "Rainbow Pinwheels"`,
 )
+// Layer indicator (firmware v1.3): a colour per layer (layer 2 green by
+// default) and the mode for the other keys
+report.openCaps = await clickText("Caps Lock Indicator")
+report.openLayer = await clickText("Layer Indicator")
+await sleep(1000)
+report.capsShown = await evaluate(
+  `!!document.querySelector("#rgb-caps-color")?.checkVisibility()`,
+)
+report.layer2 = await clickText("Layer 2")
+await sleep(1000)
+report.layer2Green = await evaluate(
+  `document.querySelector("#rgb-layer-color").value === "#00ff00"`,
+)
+report.layerWholeBoard = await clickText("Whole board")
+await sleep(1500)
+report.layerWholeBoardShown = await evaluate(
+  `[...document.querySelectorAll("button[aria-pressed=true]")].some((e) => e.textContent.trim() === "Whole board") && document.body.innerText.includes("Every key lights in the layer's color")`,
+)
+await evaluate(
+  `[...document.querySelectorAll("button")].find((e) => e.textContent.trim() === "Whole board")?.scrollIntoView({ block: "center" })`,
+)
+await sleep(500)
+await shot("02c-layer-indicator")
 // Effect picker: open it, count the effects, pick Custom
 report.openPicker = await evaluate(
   `(() => { const t = document.querySelector("#rgb-effect"); if (!t) return false; t.click(); return true })()`,
@@ -204,6 +233,18 @@ report.layerKeys = await evaluate(
   `["MO(1)", "TO(1)", "DF(1)", "OSL(1)", "Layer Lock", "Tri Lower", "OS LShift"].filter((t) => ![...document.querySelectorAll("button")].some((b) => b.innerText.trim().replace(/\\s+/g, " ") === t))`,
 )
 await shot("05b-layer-keys")
+// Reset Current Layer asks first; Cancel keeps the keymap
+report.resetAsk = await clickText("Reset Current Layer")
+await sleep(1000)
+report.resetDialog = await evaluate(
+  `[...document.querySelectorAll("[role=dialog]")].some((d) => d.textContent.includes("Reset layer 0?") && d.textContent.includes("Are you sure?"))`,
+)
+await shot("05c-reset-layer-dialog")
+report.resetCancel = await clickText("Cancel")
+await sleep(1000)
+report.resetDialogClosed = await evaluate(
+  `!document.querySelector("[role=dialog]")`,
+)
 // Tap Dance editor flow
 const clickWhere = (pred) =>
   evaluate(`(() => {

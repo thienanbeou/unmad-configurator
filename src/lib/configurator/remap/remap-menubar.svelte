@@ -17,6 +17,7 @@ this program. If not, see <https://www.gnu.org/licenses/>.
   import * as KeyboardEditor from "$lib/components/keyboard-editor"
   import LayerSelect from "$lib/components/layer-select.svelte"
   import { Button } from "$lib/components/ui/button"
+  import * as Dialog from "$lib/components/ui/dialog"
   import { keyboardContext } from "$lib/keyboard"
   import { globalStateContext, remapStateContext } from "../context.svelte"
   import { keymapQueryContext } from "../queries/keymap-query.svelte"
@@ -32,18 +33,46 @@ this program. If not, see <https://www.gnu.org/licenses/>.
 <KeyboardEditor.Menubar>
   <LayerSelect bind:layer={() => layer, (v) => remapState.setLayer(v)} />
   <div class="flex items-center gap-2">
-    <Button
-      onclick={() =>
-        keymapQuery.set({
-          layer,
-          offset: 0,
-          data: defaultKeymaps[profile][layer],
-        })}
-      size="sm"
-      variant="destructive"
-    >
-      Reset Current Layer
-    </Button>
+    <Dialog.Root>
+      <Dialog.Trigger>
+        {#snippet child({ props })}
+          <Button size="sm" variant="destructive" {...props}>
+            Reset Current Layer
+          </Button>
+        {/snippet}
+      </Dialog.Trigger>
+      <Dialog.Content>
+        <Dialog.Header>
+          <Dialog.Title>Reset layer {layer}?</Dialog.Title>
+          <Dialog.Description>
+            Are you sure? Every key on layer {layer} of profile {profile} goes back
+            to the firmware's default layout. Other layers, advanced keys and macros
+            are kept. This cannot be undone.
+          </Dialog.Description>
+        </Dialog.Header>
+        <Dialog.Footer>
+          <Dialog.Close>
+            {#snippet child({ props })}
+              <Button size="sm" variant="outline" {...props}>Cancel</Button>
+            {/snippet}
+          </Dialog.Close>
+          <Dialog.Close
+            onclick={() =>
+              keymapQuery.set({
+                layer,
+                offset: 0,
+                data: defaultKeymaps[profile][layer],
+              })}
+          >
+            {#snippet child({ props })}
+              <Button size="sm" variant="destructive" {...props}>
+                Reset Layer {layer}
+              </Button>
+            {/snippet}
+          </Dialog.Close>
+        </Dialog.Footer>
+      </Dialog.Content>
+    </Dialog.Root>
     <KeyboardEditor.LayoutDialog />
   </div>
 </KeyboardEditor.Menubar>

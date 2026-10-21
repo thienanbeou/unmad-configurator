@@ -60,6 +60,9 @@ export const hmkOptionsSchema = z.object({
   capsIndicatorDisabled: z.boolean(),
   // MAD60 HE fork v1.2: layer indicator (bit 8, stored inverted)
   layerIndicatorDisabled: z.boolean(),
+  // MAD60 HE fork v1.3: what the layer indicator does with the other keys
+  // (bits 9-10, HMK_LAYER_INDICATOR_MODES)
+  layerIndicatorMode: z.int().min(0).max(3),
 })
 
 export type HMK_Options = z.infer<typeof hmkOptionsSchema>

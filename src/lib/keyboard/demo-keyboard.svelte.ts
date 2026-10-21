@@ -44,9 +44,9 @@ import type {
   SetOptionsParams,
   SetRgbCapsParams,
   SetRgbKeyColorsParams,
+  SetRgbLayerParams,
   SetRgbParams,
   SetRgbWhiteBalanceParams,
-  SetRgbLayerParams,
   SetTickRateParams,
 } from "."
 import { demoMetadata } from "./metadata"
@@ -95,7 +95,7 @@ type DemoKeyboardState = {
   rgbKeyColors: HMK_RgbColor[]
   rgbCaps: HMK_RgbCaps
   rgbWhiteBalance: HMK_RgbColor
-  rgbLayer: HMK_RgbCaps
+  rgbLayer: HMK_RgbCaps[]
 }
 
 export class DemoKeyboard implements Keyboard {
@@ -115,6 +115,7 @@ export class DemoKeyboard implements Keyboard {
       macModeEnabled: false,
       capsIndicatorDisabled: false,
       layerIndicatorDisabled: false,
+      layerIndicatorMode: 0,
     },
     profiles: [...Array(numProfiles)].map((_, i) =>
       structuredClone(defaultProfile(i)),
@@ -124,7 +125,11 @@ export class DemoKeyboard implements Keyboard {
     rgbKeyColors: [...Array(numKeys)].map((): HMK_RgbColor => [0, 0, 0]),
     rgbCaps: { hue: 0, sat: 0, val: 210 },
     rgbWhiteBalance: [255, 255, 255],
-    rgbLayer: { hue: 170, sat: 255, val: 210 },
+    rgbLayer: [
+      { hue: 170, sat: 255, val: 210 },
+      { hue: 85, sat: 255, val: 210 },
+      { hue: 0, sat: 255, val: 210 },
+    ],
   }
 
   async disconnect() {}
@@ -239,10 +244,10 @@ export class DemoKeyboard implements Keyboard {
     this.#state.rgbWhiteBalance = data
   }
   async getRgbLayer() {
-    return { ...this.#state.rgbLayer }
+    return this.#state.rgbLayer.map((c) => ({ ...c }))
   }
-  async setRgbLayer({ data }: SetRgbLayerParams) {
-    this.#state.rgbLayer = data
+  async setRgbLayer({ layer, data }: SetRgbLayerParams) {
+    this.#state.rgbLayer[layer - 1] = data
   }
   async setRgbKeyColors({ offset, data }: SetRgbKeyColorsParams) {
     for (let i = 0; i < data.length; i++) {

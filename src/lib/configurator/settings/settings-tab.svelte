@@ -203,7 +203,11 @@ this program. If not, see <https://www.gnu.org/licenses/>.
             <Dialog.Header>
               <Dialog.Title>Factory Reset?</Dialog.Title>
               <Dialog.Description>
-                Are you sure you want to factory reset your keyboard?
+                Are you sure? Every profile (keymaps, advanced keys, macros,
+                actuation), the switches, the lighting and the calibration go
+                back to the firmware's defaults (the stock layout). Keys relearn
+                their travel as you press them. Export the profiles you want to
+                keep (Profiles tab) first. This cannot be undone.
               </Dialog.Description>
             </Dialog.Header>
             <Dialog.Footer>

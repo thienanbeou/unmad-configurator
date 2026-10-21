@@ -157,17 +157,15 @@ export async function setRgbWhiteBalance(
   })
 }
 
-/**
- * Layer indicator colour (QMK HSV), or null when the firmware cannot set it
- * (older than v1.2)
- */
-export async function getRgbLayer(
+async function getRgbLayerColor(
   commander: Commander,
+  layer: number,
 ): Promise<HMK_RgbCaps | null> {
   let view: DataView
   try {
     view = await commander.sendCommand({
       command: HMK_Command.GET_RGB_LAYER,
+      payload: [layer],
       timeout: 1000,
     })
   } catch {
@@ -176,12 +174,34 @@ export async function getRgbLayer(
   return { hue: view.getUint8(0), sat: view.getUint8(1), val: view.getUint8(2) }
 }
 
+/**
+ * Layer indicator colours (QMK HSV) from layer 1 on, or null when the firmware
+ * cannot set them (older than v1.2). v1.2 has one colour for every layer (and
+ * no modes): it ignores the layer byte, so it answers a layer out of range,
+ * which v1.3 refuses.
+ */
+export async function getRgbLayer(
+  commander: Commander,
+  numLayers: number,
+): Promise<HMK_RgbCaps[] | null> {
+  const first = await getRgbLayerColor(commander, 1)
+  if (!first) return null
+  if (await getRgbLayerColor(commander, numLayers)) return [first]
+  const ret = [first]
+  for (let layer = 2; layer < numLayers; layer++) {
+    const color = await getRgbLayerColor(commander, layer)
+    if (!color) return [first]
+    ret.push(color)
+  }
+  return ret
+}
+
 export async function setRgbLayer(
   commander: Commander,
-  { data: { hue, sat, val } }: SetRgbLayerParams,
+  { layer, data: { hue, sat, val } }: SetRgbLayerParams,
 ) {
   await commander.sendCommand({
     command: HMK_Command.SET_RGB_LAYER,
-    payload: [hue, sat, val],
+    payload: [hue, sat, val, layer],
   })
 }
