@@ -103,7 +103,7 @@ this program. If not, see <https://www.gnu.org/licenses/>.
             size="icon-sm"
             title={shown <= 1
               ? "Layer 0 always stays"
-              : `Remove layer ${shown - 1}`}
+              : `Remove layer ${shown - 1} (only the last layer can go)`}
             variant="outline"
             {...props}
           >
@@ -118,6 +118,12 @@ this program. If not, see <https://www.gnu.org/licenses/>.
             Are you sure? Layer {shown - 1} is removed from every profile: its keys
             go back to transparent and its advanced keys (tap dances, macros and the
             rest) are deleted. Layer 0 always stays. This cannot be undone.
+          </Dialog.Description>
+          <Dialog.Description>
+            Only the last layer can be removed: taking one out of the middle
+            would renumber every layer key above it (MO, TO, DF, OSL, also in
+            tap dances). To drop a middle layer, copy the layers above it down
+            first.
           </Dialog.Description>
         </Dialog.Header>
         <Dialog.Footer>

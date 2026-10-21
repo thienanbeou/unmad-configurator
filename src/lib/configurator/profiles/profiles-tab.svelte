@@ -214,6 +214,12 @@ this program. If not, see <https://www.gnu.org/licenses/>.
                 (keymap, advanced keys, macros, actuation) and is hidden. Export it
                 first to keep it. Profile 0 always stays. This cannot be undone.
               </Dialog.Description>
+              <Dialog.Description>
+                Only the last profile can be removed: taking one out of the
+                middle would renumber the profile keys (PF) above it. To drop
+                another, export the later profiles and import them one lower
+                first.
+              </Dialog.Description>
             </Dialog.Header>
             <Dialog.Footer>
               <Dialog.Close>
@@ -238,6 +244,11 @@ this program. If not, see <https://www.gnu.org/licenses/>.
           {numProfiles}/{inUse.max.profiles}
         </span>
       </div>
+      <span class="text-sm text-muted-foreground">
+        Only the last profile can be removed: taking one out of the middle would
+        renumber the profile keys (PF) above it. To drop another, export the
+        later profiles and import them one lower first.
+      </span>
     {/if}
   </FixedScrollArea>
 </div>
