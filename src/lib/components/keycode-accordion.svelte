@@ -15,6 +15,7 @@ this program. If not, see <https://www.gnu.org/licenses/>.
 
 <script lang="ts">
   import { XIcon } from "@lucide/svelte"
+  import { inUseQueryContext } from "$lib/configurator/queries/in-use-query.svelte"
   import { keyboardContext } from "$lib/keyboard"
   import {
     getCategorizedKeycodes,
@@ -44,8 +45,15 @@ this program. If not, see <https://www.gnu.org/licenses/>.
   const setAccordionValue = (v: string[]) =>
     search === "" && (accordionValue = v)
 
-  const categorizedKeycodes = getCategorizedKeycodes(
-    keyboardContext.get().metadata,
+  // MAD60 HE fork: layer and profile keys for the ones in use (firmware v1.4)
+  const metadata = keyboardContext.get().metadata
+  const inUse = inUseQueryContext.getOr(null)
+  const categorizedKeycodes = $derived(
+    getCategorizedKeycodes({
+      ...metadata,
+      numProfiles: inUse?.current.profiles ?? metadata.numProfiles,
+      numLayers: inUse?.current.layers ?? metadata.numLayers,
+    }),
   )
   const filteredKeycodes = $derived.by(() => {
     if (search === "") return categorizedKeycodes

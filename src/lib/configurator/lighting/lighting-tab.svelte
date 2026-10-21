@@ -44,6 +44,7 @@ this program. If not, see <https://www.gnu.org/licenses/>.
   import type { ComponentProps } from "svelte"
   import { SvelteSet } from "svelte/reactivity"
   import { displayLayoutContext } from "../context.svelte"
+  import { inUseQueryContext } from "../queries/in-use-query.svelte"
   import { keymapQueryContext } from "../queries/keymap-query.svelte"
   import { optionsQueryContext } from "../queries/options-query.svelte"
   import { rgbQueryContext } from "../queries/rgb-query.svelte"
@@ -80,6 +81,8 @@ this program. If not, see <https://www.gnu.org/licenses/>.
   // colour for every layer and no modes)
   const { current: layerColors } = $derived(rgbQuery.layer)
   const perLayer = $derived((layerColors?.length ?? 0) > 1)
+  // Only the layers in use (firmware v1.4) get a button
+  const layersInUse = $derived(inUseQueryContext.get().current.layers)
   let layerEdit = $state(1)
   const layerColor = $derived(
     layerColors?.[Math.min(layerEdit, layerColors.length) - 1],
@@ -533,7 +536,7 @@ this program. If not, see <https://www.gnu.org/licenses/>.
                       </label>
                       {#if perLayer}
                         <div class="flex flex-wrap gap-2">
-                          {#each layerColors as c, i (i)}
+                          {#each layerColors.slice(0, layersInUse - 1) as c, i (i)}
                             <Button
                               aria-pressed={layerEdit === i + 1}
                               class={cn(

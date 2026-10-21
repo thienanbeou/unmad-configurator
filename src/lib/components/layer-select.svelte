@@ -14,15 +14,18 @@ this program. If not, see <https://www.gnu.org/licenses/>.
 -->
 
 <script lang="ts">
+  import { PlusIcon } from "@lucide/svelte"
+  import { inUseQueryContext } from "$lib/configurator/queries/in-use-query.svelte"
   import { keyboardContext } from "$lib/keyboard"
   import { cn, type WithoutChildren } from "$lib/utils"
   import type { HTMLAttributes } from "svelte/elements"
+  import { Button } from "./ui/button"
   import * as ToggleGroup from "./ui/toggle-group"
 
   let {
     class: className,
     disabled,
-    numLayers = keyboardContext.get().metadata.numLayers,
+    numLayers,
     layer = $bindable(0),
     onLayerChange,
     ...props
@@ -32,6 +35,19 @@ this program. If not, see <https://www.gnu.org/licenses/>.
     layer?: number
     onLayerChange?: (layer: number) => void
   } = $props()
+
+  // MAD60 HE fork: the layers in use, with a button to add one (firmware v1.4)
+  const inUse = inUseQueryContext.getOr(null)
+  const shown = $derived(
+    numLayers ??
+      inUse?.current.layers ??
+      keyboardContext.get().metadata.numLayers,
+  )
+  const canAdd = $derived(
+    numLayers === undefined &&
+      !!inUse?.adjustable &&
+      inUse.current.layers < inUse.max.layers,
+  )
 </script>
 
 <div class={cn("flex items-center gap-2", className)} {...props}>
@@ -51,10 +67,22 @@ this program. If not, see <https://www.gnu.org/licenses/>.
     type="single"
     variant="outline"
   >
-    {#each { length: numLayers }, i (i)}
+    {#each { length: shown }, i (i)}
       <ToggleGroup.Item value={String(i)}>
         {i}
       </ToggleGroup.Item>
     {/each}
   </ToggleGroup.Root>
+  {#if canAdd}
+    <Button
+      aria-label="Add a layer"
+      {disabled}
+      onclick={() => inUse?.add("layers")}
+      size="icon-sm"
+      title={`Add layer ${shown} (up to ${inUse?.max.layers})`}
+      variant="outline"
+    >
+      <PlusIcon />
+    </Button>
+  {/if}
 </div>

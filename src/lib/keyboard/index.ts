@@ -63,6 +63,10 @@ export type SetRgbKeyColorsParams = { offset: number; data: HMK_RgbColor[] }
 export type SetRgbCapsParams = SetParams<HMK_RgbCaps>
 export type SetRgbWhiteBalanceParams = SetParams<HMK_RgbColor>
 // layer: 1 and up
+// Profiles and layers in use (firmware v1.4): the configurator shows these
+// many and adds more up to numProfiles / numLayers
+export type HMK_InUse = { profiles: number; layers: number }
+export type SetInUseParams = SetParams<HMK_InUse>
 export type SetRgbLayerParams = { layer: number; data: HMK_RgbCaps }
 export type GetGamepadOptionsParams = GetProfileParams
 export type SetGamepadOptionsParams = SetProfileParams<HMK_GamepadOptions>
@@ -119,6 +123,9 @@ export type KeyboardAction = {
   setRgbWhiteBalance(params: SetRgbWhiteBalanceParams): Promise<void>
   // Layer indicator colours from layer 1 on (one entry: firmware v1.2)
   getRgbLayer(): Promise<HMK_RgbCaps[] | null>
+  // null: the firmware has no such setting (all in use)
+  getInUse(): Promise<HMK_InUse | null>
+  setInUse(params: SetInUseParams): Promise<void>
   setRgbLayer(params: SetRgbLayerParams): Promise<void>
 }
 

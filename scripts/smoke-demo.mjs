@@ -245,6 +245,35 @@ await sleep(1000)
 report.resetDialogClosed = await evaluate(
   `!document.querySelector("[role=dialog]")`,
 )
+// Layers and profiles in use (firmware v1.4; the demo starts at 3 x 3 of
+// 4 x 4): "+" adds a layer next to the layer buttons, then hides at the max;
+// the Profiles tab adds a profile
+const layerButtons = () =>
+  evaluate(
+    `[...document.querySelectorAll("[data-slot=toggle-group-item]")].filter((e) => e.checkVisibility() && /^[0-9]$/.test(e.textContent.trim())).length`,
+  )
+report.layersBefore = await layerButtons()
+await shot("05c2-add-layer")
+report.addLayer = await evaluate(
+  `(() => { const b = document.querySelector("button[aria-label='Add a layer']"); if (!b) return false; b.click(); return true })()`,
+)
+await sleep(1500)
+report.layersAfter = await layerButtons()
+report.addLayerGone = await evaluate(
+  `!document.querySelector("button[aria-label='Add a layer']")`,
+)
+report.layersAdded =
+  report.layersBefore === 3 && report.layersAfter === 4 && report.addLayerGone
+report.profilesTab = await clickText("Profiles")
+await sleep(1500)
+report.addProfile = await clickText("Add Profile 3")
+await sleep(1500)
+report.profilesAdded = await evaluate(
+  `document.body.innerText.includes("Profile 3") && ![...document.querySelectorAll("button")].some((e) => e.textContent.includes("Add Profile"))`,
+)
+await shot("05d-profiles-added")
+await clickText("Remap")
+await sleep(1500)
 // Tap Dance editor flow
 const clickWhere = (pred) =>
   evaluate(`(() => {

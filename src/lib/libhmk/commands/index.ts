@@ -63,6 +63,8 @@ export enum HMK_Command {
   SET_RGB_WHITE_BALANCE,
   GET_RGB_LAYER,
   SET_RGB_LAYER,
+  GET_IN_USE,
+  SET_IN_USE,
 
   UNKNOWN = 255,
 }

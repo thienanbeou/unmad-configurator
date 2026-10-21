@@ -14,16 +14,21 @@ this program. If not, see <https://www.gnu.org/licenses/>.
 -->
 
 <script lang="ts">
-  import { KeyboardIcon } from "@lucide/svelte"
+  import { KeyboardIcon, PlusIcon } from "@lucide/svelte"
   import * as Select from "$lib/components/ui/select"
   import * as Tooltip from "$lib/components/ui/tooltip"
-  import { keyboardContext } from "$lib/keyboard"
   import { globalStateContext } from "./context.svelte"
+  import { inUseQueryContext } from "./queries/in-use-query.svelte"
   import { profileQueryContext } from "./queries/profile-query.svelte"
 
   const globalState = globalStateContext.get()
   const { profile } = $derived(globalState)
-  const { numProfiles } = keyboardContext.get().metadata
+  // MAD60 HE fork: the profiles in use, with an item to add one (firmware v1.4)
+  const inUse = inUseQueryContext.get()
+  const numProfiles = $derived(inUse.current.profiles)
+  const canAdd = $derived(
+    inUse.adjustable && inUse.current.profiles < inUse.max.profiles,
+  )
 
   const { current: keyboardProfile } = $derived(
     profileQueryContext.get().profile,
@@ -31,7 +36,15 @@ this program. If not, see <https://www.gnu.org/licenses/>.
 </script>
 
 <Select.Root
-  bind:value={() => String(profile), (v) => globalState.setProfile(Number(v))}
+  bind:value={
+    () => String(profile),
+    (v) => {
+      if (v === "add") {
+        const added = numProfiles
+        inUse.add("profiles").then(() => globalState.setProfile(added))
+      } else globalState.setProfile(Number(v))
+    }
+  }
   type="single"
 >
   <Select.Trigger class="w-48" size="sm">
@@ -59,5 +72,13 @@ this program. If not, see <https://www.gnu.org/licenses/>.
         </span>
       </Select.Item>
     {/each}
+    {#if canAdd}
+      <Select.Item value="add">
+        <span class="flex items-center gap-2">
+          <PlusIcon />
+          Add Profile {numProfiles}
+        </span>
+      </Select.Item>
+    {/if}
   </Select.Content>
 </Select.Root>

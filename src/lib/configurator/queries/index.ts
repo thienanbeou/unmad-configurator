@@ -28,6 +28,7 @@ import {
   calibrationQueryContext,
 } from "./calibration.query.svelte"
 import { GamepadQuery, gamepadQueryContext } from "./gamepad-query.svelte"
+import { InUseQuery, inUseQueryContext } from "./in-use-query.svelte"
 import { KeymapQuery, keymapQueryContext } from "./keymap-query.svelte"
 import { MacrosQuery, macrosQueryContext } from "./macros-query.svelte"
 import { OptionsQuery, optionsQueryContext } from "./options-query.svelte"
@@ -59,6 +60,7 @@ export function setConfiguratorQueryContext() {
   analogInfoQueryContext.set(new AnalogInfoQuery())
   calibrationQueryContext.set(new CalibrationQuery())
   optionsQueryContext.set(new OptionsQuery())
+  inUseQueryContext.set(new InUseQuery())
   keymapQueryContext.set(new KeymapQuery())
   actuationQueryContext.set(new ActuationQuery())
   advancedKeysQueryContext.set(new AdvancedKeysQuery())

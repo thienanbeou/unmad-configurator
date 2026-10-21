@@ -33,12 +33,14 @@ import type {
   GetKeymapParams,
   GetMacrosParams,
   GetTickRateParams,
+  HMK_InUse,
   Keyboard,
   ResetProfileParams,
   SetActuationMapParams,
   SetAdvancedKeysParams,
   SetGamepadButtonsParams,
   SetGamepadOptionsParams,
+  SetInUseParams,
   SetKeymapParams,
   SetMacrosParams,
   SetOptionsParams,
@@ -96,6 +98,7 @@ type DemoKeyboardState = {
   rgbCaps: HMK_RgbCaps
   rgbWhiteBalance: HMK_RgbColor
   rgbLayer: HMK_RgbCaps[]
+  inUse: HMK_InUse
 }
 
 export class DemoKeyboard implements Keyboard {
@@ -130,6 +133,8 @@ export class DemoKeyboard implements Keyboard {
       { hue: 85, sat: 255, val: 210 },
       { hue: 0, sat: 255, val: 210 },
     ],
+    // Fewer than the demo board has, so the add buttons show
+    inUse: { profiles: 3, layers: 3 },
   }
 
   async disconnect() {}
@@ -248,6 +253,12 @@ export class DemoKeyboard implements Keyboard {
   }
   async setRgbLayer({ layer, data }: SetRgbLayerParams) {
     this.#state.rgbLayer[layer - 1] = data
+  }
+  async getInUse() {
+    return { ...this.#state.inUse }
+  }
+  async setInUse({ data }: SetInUseParams) {
+    this.#state.inUse = data
   }
   async setRgbKeyColors({ offset, data }: SetRgbKeyColorsParams) {
     for (let i = 0; i < data.length; i++) {

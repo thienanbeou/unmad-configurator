@@ -14,7 +14,7 @@ this program. If not, see <https://www.gnu.org/licenses/>.
 -->
 
 <script lang="ts">
-  import { EllipsisVerticalIcon } from "@lucide/svelte"
+  import { EllipsisVerticalIcon, PlusIcon } from "@lucide/svelte"
   import FixedScrollArea from "$lib/components/fixed-scroll-area.svelte"
   import { Badge } from "$lib/components/ui/badge"
   import { Button } from "$lib/components/ui/button"
@@ -25,6 +25,7 @@ this program. If not, see <https://www.gnu.org/licenses/>.
   import type { HTMLAttributes } from "svelte/elements"
   import z from "zod"
   import { KeyboardConfig } from "../lib/keyboard-config.svelte"
+  import { inUseQueryContext } from "../queries/in-use-query.svelte"
   import { profileQueryContext } from "../queries/profile-query.svelte"
 
   const {
@@ -32,7 +33,10 @@ this program. If not, see <https://www.gnu.org/licenses/>.
     ...props
   }: WithoutChildren<HTMLAttributes<HTMLDivElement>> = $props()
 
-  const { name, numProfiles } = keyboardContext.get().metadata
+  const { name } = keyboardContext.get().metadata
+  // MAD60 HE fork: the profiles in use, and adding one (firmware v1.4)
+  const inUse = inUseQueryContext.get()
+  const numProfiles = $derived(inUse.current.profiles)
 
   const profileQuery = profileQueryContext.get()
   const { current: currentProfile } = $derived(profileQuery.profile)
@@ -165,6 +169,22 @@ this program. If not, see <https://www.gnu.org/licenses/>.
         </div>
       {/each}
     </div>
+    {#if inUse.adjustable && numProfiles < inUse.max.profiles}
+      <div>
+        <Button
+          onclick={() => inUse.add("profiles")}
+          size="sm"
+          variant="outline"
+        >
+          <PlusIcon />
+          Add Profile {numProfiles}
+        </Button>
+        <span class="ml-2 text-sm text-muted-foreground">
+          {numProfiles} of {inUse.max.profiles} in use. A new profile starts from
+          the default layout.
+        </span>
+      </div>
+    {/if}
   </FixedScrollArea>
 </div>
 <input

@@ -117,6 +117,12 @@ of a tab, which reloads the page once); after that it is fast.
   split is saved for every tab (`autoSaveId` in `keyboard-editor.svelte`).
   The "window too small" screen starts below 800 x 480 (was 1024 x 768,
   which blocked laptops at 125-150% scaling).
+- **Profiles and layers in use** (firmware v1.4, GET/SET_IN_USE 0xED /
+  0xEE, `in-use-query.svelte.ts`): the layer buttons (`layer-select.svelte`,
+  Remap and Advanced Keys) get a "+" and the profile picker / Profiles tab
+  an "Add Profile" until 8 (the firmware's room); the key list's Layers and
+  Profiles keys, and the layer indicator colours, follow the counts in use.
+  Older firmware: no buttons, every profile and layer shown as before.
 - **Lighting folds**: Color Calibration, Caps Lock Indicator and Layer
   Indicator are closed accordion sections (`ui/accordion`; the items get
   `-mx-1` / `px-1` because the content clips for its animation and cut off

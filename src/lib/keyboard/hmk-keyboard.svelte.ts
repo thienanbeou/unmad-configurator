@@ -45,6 +45,7 @@ import {
   getGamepadOptions,
   setGamepadOptions,
 } from "$lib/libhmk/commands/gamepad-options"
+import { getInUse, setInUse } from "$lib/libhmk/commands/in-use"
 import { getKeymap, setKeymap } from "$lib/libhmk/commands/keymap"
 import { getMacros, setMacros } from "$lib/libhmk/commands/macros"
 import { getMetadata } from "$lib/libhmk/commands/metadata"
@@ -86,6 +87,7 @@ import type {
   SetCalibrationParams,
   SetGamepadButtonsParams,
   SetGamepadOptionsParams,
+  SetInUseParams,
   SetKeymapParams,
   SetMacrosParams,
   SetOptionsParams,
@@ -251,6 +253,12 @@ class HMKKeyboard implements Keyboard {
   }
   setRgbLayer(params: SetRgbLayerParams) {
     return setRgbLayer(this.commander, params)
+  }
+  getInUse() {
+    return getInUse(this.commander)
+  }
+  setInUse(params: SetInUseParams) {
+    return setInUse(this.commander, params)
   }
 }
 
