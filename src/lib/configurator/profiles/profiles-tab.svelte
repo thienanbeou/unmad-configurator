@@ -14,16 +14,18 @@ this program. If not, see <https://www.gnu.org/licenses/>.
 -->
 
 <script lang="ts">
-  import { EllipsisVerticalIcon, PlusIcon } from "@lucide/svelte"
+  import { EllipsisVerticalIcon, PlusIcon, Trash2Icon } from "@lucide/svelte"
   import FixedScrollArea from "$lib/components/fixed-scroll-area.svelte"
   import { Badge } from "$lib/components/ui/badge"
   import { Button } from "$lib/components/ui/button"
+  import * as Dialog from "$lib/components/ui/dialog"
   import * as DropdownMenu from "$lib/components/ui/dropdown-menu"
   import { keyboardContext } from "$lib/keyboard"
   import { cn, type WithoutChildren } from "$lib/utils"
   import { toast } from "svelte-sonner"
   import type { HTMLAttributes } from "svelte/elements"
   import z from "zod"
+  import { globalStateContext } from "../context.svelte"
   import { KeyboardConfig } from "../lib/keyboard-config.svelte"
   import { inUseQueryContext } from "../queries/in-use-query.svelte"
   import { profileQueryContext } from "../queries/profile-query.svelte"
@@ -37,6 +39,14 @@ this program. If not, see <https://www.gnu.org/licenses/>.
   // MAD60 HE fork: the profiles in use, and adding one (firmware v1.4)
   const inUse = inUseQueryContext.get()
   const numProfiles = $derived(inUse.current.profiles)
+  const globalState = globalStateContext.get()
+
+  // Takes the last profile out (never profile 0); the firmware resets it
+  async function removeLastProfile() {
+    const last = numProfiles - 1
+    await inUse.remove("profiles")
+    if (globalState.profile >= last) globalState.setProfile(0)
+  }
 
   const profileQuery = profileQueryContext.get()
   const { current: currentProfile } = $derived(profileQuery.profile)
@@ -169,19 +179,63 @@ this program. If not, see <https://www.gnu.org/licenses/>.
         </div>
       {/each}
     </div>
-    {#if inUse.adjustable && numProfiles < inUse.max.profiles}
-      <div>
-        <Button
-          onclick={() => inUse.add("profiles")}
-          size="sm"
-          variant="outline"
+    {#if inUse.adjustable}
+      <div class="flex flex-wrap items-center gap-2">
+        {#if numProfiles < inUse.max.profiles}
+          <Button
+            onclick={() => inUse.add("profiles")}
+            size="sm"
+            variant="outline"
+          >
+            <PlusIcon />
+            Add Profile {numProfiles}
+          </Button>
+        {/if}
+        <Dialog.Root>
+          <Dialog.Trigger>
+            {#snippet child({ props })}
+              <Button
+                disabled={numProfiles <= 1}
+                size="sm"
+                title={numProfiles <= 1 ? "Profile 0 always stays" : undefined}
+                variant="outline"
+                {...props}
+              >
+                <Trash2Icon />
+                Remove Profile {numProfiles - 1}
+              </Button>
+            {/snippet}
+          </Dialog.Trigger>
+          <Dialog.Content>
+            <Dialog.Header>
+              <Dialog.Title>Remove profile {numProfiles - 1}?</Dialog.Title>
+              <Dialog.Description>
+                Are you sure? Profile {numProfiles - 1} goes back to the default layout
+                (keymap, advanced keys, macros, actuation) and is hidden. Export it
+                first to keep it. Profile 0 always stays. This cannot be undone.
+              </Dialog.Description>
+            </Dialog.Header>
+            <Dialog.Footer>
+              <Dialog.Close>
+                {#snippet child({ props })}
+                  <Button size="sm" variant="outline" {...props}>Cancel</Button>
+                {/snippet}
+              </Dialog.Close>
+              <Dialog.Close onclick={removeLastProfile}>
+                {#snippet child({ props })}
+                  <Button size="sm" variant="destructive" {...props}>
+                    Remove Profile {numProfiles - 1}
+                  </Button>
+                {/snippet}
+              </Dialog.Close>
+            </Dialog.Footer>
+          </Dialog.Content>
+        </Dialog.Root>
+        <span
+          class="text-sm text-muted-foreground tabular-nums"
+          title={`${numProfiles} profiles in use; this keyboard has room for ${inUse.max.profiles}`}
         >
-          <PlusIcon />
-          Add Profile {numProfiles}
-        </Button>
-        <span class="ml-2 text-sm text-muted-foreground">
-          {numProfiles} of {inUse.max.profiles} in use. A new profile starts from
-          the default layout.
+          {numProfiles}/{inUse.max.profiles}
         </span>
       </div>
     {/if}

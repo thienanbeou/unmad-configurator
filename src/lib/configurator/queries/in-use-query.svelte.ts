@@ -16,6 +16,9 @@
 import { keyboardContext, type HMK_InUse } from "$lib/keyboard"
 import { Context, resource, type ResourceReturn } from "runed"
 import { optimisticUpdate } from "."
+import { advancedKeysQueryContext } from "./advanced-keys-query.svelte"
+import { keymapQueryContext } from "./keymap-query.svelte"
+import { profileQueryContext } from "./profile-query.svelte"
 
 // MAD60 HE fork: profiles and layers in use. `current` falls back to every
 // profile and layer on firmware without the setting; `max` is what fits.
@@ -24,6 +27,9 @@ export class InUseQuery {
   readonly max: HMK_InUse
 
   #keyboard = keyboardContext.get()
+  #keymap = keymapQueryContext.get()
+  #advancedKeys = advancedKeysQueryContext.get()
+  #profile = profileQueryContext.get()
 
   constructor() {
     const { numProfiles, numLayers } = this.#keyboard.metadata
@@ -43,10 +49,25 @@ export class InUseQuery {
     return !!this.inUse.current
   }
 
-  async add(what: keyof HMK_InUse) {
+  add(what: keyof HMK_InUse) {
+    return this.#change(what, 1)
+  }
+
+  // Takes the last one out (never profile 0 / layer 0); the firmware clears
+  // it (a profile to its defaults, a layer to transparent in every profile
+  // without its advanced keys), so the keymap and advanced keys are read again
+  async remove(what: keyof HMK_InUse) {
+    await this.#change(what, -1)
+    this.#keymap.keymap.refetch()
+    this.#advancedKeys.advancedKeys.refetch()
+    this.#profile.profile.refetch()
+  }
+
+  async #change(what: keyof HMK_InUse, by: number) {
     const current = this.inUse.current
-    if (!current || current[what] >= this.max[what]) return
-    const data = { ...current, [what]: current[what] + 1 }
+    const count = (current?.[what] ?? 0) + by
+    if (!current || count < 1 || count > this.max[what]) return
+    const data = { ...current, [what]: count }
     await optimisticUpdate({
       resource: this.inUse,
       optimisticFn: () => data,

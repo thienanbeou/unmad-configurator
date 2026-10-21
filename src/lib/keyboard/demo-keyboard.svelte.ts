@@ -22,6 +22,7 @@ import {
   type HMK_AdvancedKey,
 } from "$lib/libhmk/advanced-keys"
 import { HMK_GamepadButton, type HMK_GamepadOptions } from "$lib/libhmk/gamepad"
+import { Keycode } from "$lib/libhmk/keycodes"
 import { defaultMacroNode, type HMK_MacroNode } from "$lib/libhmk/macro"
 import type { HMK_RgbCaps, HMK_RgbColor, HMK_RgbConfig } from "$lib/libhmk/rgb"
 import type {
@@ -258,6 +259,20 @@ export class DemoKeyboard implements Keyboard {
     return { ...this.#state.inUse }
   }
   async setInUse({ data }: SetInUseParams) {
+    // As the firmware: what is taken out is cleared (profiles to defaults,
+    // layers to transparent without their advanced keys)
+    const { profiles, layers } = this.#state.inUse
+    for (let p = data.profiles; p < profiles; p++) {
+      this.#state.profiles[p] = structuredClone(defaultProfile(p))
+    }
+    for (const profile of this.#state.profiles.slice(0, data.profiles)) {
+      for (let l = data.layers; l < layers; l++) {
+        profile.keymap[l].fill(Keycode.KC_TRANSPARENT)
+      }
+      profile.advancedKeys = profile.advancedKeys.map((ak) =>
+        ak.layer >= data.layers ? defaultAdvancedKey : ak,
+      )
+    }
     this.#state.inUse = data
   }
   async setRgbKeyColors({ offset, data }: SetRgbKeyColorsParams) {

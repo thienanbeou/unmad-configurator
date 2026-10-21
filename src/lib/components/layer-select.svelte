@@ -14,12 +14,13 @@ this program. If not, see <https://www.gnu.org/licenses/>.
 -->
 
 <script lang="ts">
-  import { PlusIcon } from "@lucide/svelte"
+  import { PlusIcon, Trash2Icon } from "@lucide/svelte"
   import { inUseQueryContext } from "$lib/configurator/queries/in-use-query.svelte"
   import { keyboardContext } from "$lib/keyboard"
   import { cn, type WithoutChildren } from "$lib/utils"
   import type { HTMLAttributes } from "svelte/elements"
   import { Button } from "./ui/button"
+  import * as Dialog from "./ui/dialog"
   import * as ToggleGroup from "./ui/toggle-group"
 
   let {
@@ -36,18 +37,25 @@ this program. If not, see <https://www.gnu.org/licenses/>.
     onLayerChange?: (layer: number) => void
   } = $props()
 
-  // MAD60 HE fork: the layers in use, with a button to add one (firmware v1.4)
+  // MAD60 HE fork: the layers in use, out of the room there is, with buttons
+  // to add one and remove the last (never layer 0) (firmware v1.4)
   const inUse = inUseQueryContext.getOr(null)
   const shown = $derived(
     numLayers ??
       inUse?.current.layers ??
       keyboardContext.get().metadata.numLayers,
   )
-  const canAdd = $derived(
-    numLayers === undefined &&
-      !!inUse?.adjustable &&
-      inUse.current.layers < inUse.max.layers,
-  )
+  const adjustable = $derived(numLayers === undefined && !!inUse?.adjustable)
+  const max = $derived(inUse?.max.layers ?? shown)
+
+  async function removeLast() {
+    const last = shown - 1
+    await inUse?.remove("layers")
+    if (layer >= last) {
+      layer = last - 1
+      onLayerChange?.(layer)
+    }
+  }
 </script>
 
 <div class={cn("flex items-center gap-2", className)} {...props}>
@@ -73,16 +81,69 @@ this program. If not, see <https://www.gnu.org/licenses/>.
       </ToggleGroup.Item>
     {/each}
   </ToggleGroup.Root>
-  {#if canAdd}
-    <Button
-      aria-label="Add a layer"
-      {disabled}
-      onclick={() => inUse?.add("layers")}
-      size="icon-sm"
-      title={`Add layer ${shown} (up to ${inUse?.max.layers})`}
-      variant="outline"
+  {#if adjustable}
+    {#if shown < max}
+      <Button
+        aria-label="Add a layer"
+        {disabled}
+        onclick={() => inUse?.add("layers")}
+        size="icon-sm"
+        title={`Add layer ${shown}`}
+        variant="outline"
+      >
+        <PlusIcon />
+      </Button>
+    {/if}
+    <Dialog.Root>
+      <Dialog.Trigger>
+        {#snippet child({ props })}
+          <Button
+            aria-label="Remove the last layer"
+            disabled={disabled || shown <= 1}
+            size="icon-sm"
+            title={shown <= 1
+              ? "Layer 0 always stays"
+              : `Remove layer ${shown - 1}`}
+            variant="outline"
+            {...props}
+          >
+            <Trash2Icon />
+          </Button>
+        {/snippet}
+      </Dialog.Trigger>
+      <Dialog.Content>
+        <Dialog.Header>
+          <Dialog.Title>Remove layer {shown - 1}?</Dialog.Title>
+          <Dialog.Description>
+            Are you sure? Layer {shown - 1} is removed from every profile: its keys
+            go back to transparent and its advanced keys (tap dances, macros and the
+            rest) are deleted. Layer 0 always stays. This cannot be undone.
+          </Dialog.Description>
+        </Dialog.Header>
+        <Dialog.Footer>
+          <Dialog.Close>
+            {#snippet child({ props })}
+              <Button size="sm" variant="outline" {...props}>Cancel</Button>
+            {/snippet}
+          </Dialog.Close>
+          <Dialog.Close onclick={removeLast}>
+            {#snippet child({ props })}
+              <Button size="sm" variant="destructive" {...props}>
+                Remove Layer {shown - 1}
+              </Button>
+            {/snippet}
+          </Dialog.Close>
+        </Dialog.Footer>
+      </Dialog.Content>
+    </Dialog.Root>
+    <span
+      class={cn(
+        "text-sm text-muted-foreground tabular-nums",
+        disabled && "opacity-50",
+      )}
+      title={`${shown} layers in use; this keyboard has room for ${max}`}
     >
-      <PlusIcon />
-    </Button>
+      {shown}/{max}
+    </span>
   {/if}
 </div>

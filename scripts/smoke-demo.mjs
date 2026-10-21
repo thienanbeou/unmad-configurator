@@ -264,6 +264,24 @@ report.addLayerGone = await evaluate(
 )
 report.layersAdded =
   report.layersBefore === 3 && report.layersAfter === 4 && report.addLayerGone
+// The count, then the trash asks first and takes the last layer out
+const visibleText = (t) =>
+  evaluate(
+    `[...document.querySelectorAll("span")].some((e) => e.checkVisibility() && e.textContent.trim() === ${JSON.stringify(t)})`,
+  )
+report.layerCount4 = await visibleText("4/4")
+report.removeLayerAsk = await evaluate(
+  `(() => { const b = [...document.querySelectorAll("button[aria-label='Remove the last layer']")].find((e) => e.checkVisibility()); if (!b) return false; b.click(); return true })()`,
+)
+await sleep(1000)
+report.removeLayerDialog = await evaluate(
+  `[...document.querySelectorAll("[role=dialog]")].some((d) => d.textContent.includes("Remove layer 3?") && d.textContent.includes("Layer 0 always stays"))`,
+)
+await shot("05c3-remove-layer-dialog")
+report.removeLayer = await clickText("Remove Layer 3")
+await sleep(1500)
+report.layersRemoved =
+  (await layerButtons()) === 3 && (await visibleText("3/4"))
 report.profilesTab = await clickText("Profiles")
 await sleep(1500)
 report.addProfile = await clickText("Add Profile 3")
@@ -272,6 +290,20 @@ report.profilesAdded = await evaluate(
   `document.body.innerText.includes("Profile 3") && ![...document.querySelectorAll("button")].some((e) => e.textContent.includes("Add Profile"))`,
 )
 await shot("05d-profiles-added")
+report.profileCount4 = await visibleText("4/4")
+report.removeProfileAsk = await clickText("Remove Profile 3")
+await sleep(1000)
+report.removeProfileDialog = await evaluate(
+  `[...document.querySelectorAll("[role=dialog]")].some((d) => d.textContent.includes("Remove profile 3?") && d.textContent.includes("Profile 0 always stays"))`,
+)
+report.removeProfile = await evaluate(
+  `(() => { const b = [...document.querySelectorAll("[role=dialog] button")].find((e) => e.textContent.trim() === "Remove Profile 3"); if (!b) return false; b.click(); return true })()`,
+)
+await sleep(1500)
+report.profilesRemoved =
+  !(await evaluate(
+    `[...document.querySelectorAll("div")].some((e) => e.textContent.trim() === "Profile 3")`,
+  )) && (await visibleText("3/4"))
 await clickText("Remap")
 await sleep(1500)
 // Tap Dance editor flow

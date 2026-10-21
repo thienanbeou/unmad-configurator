@@ -60,7 +60,6 @@ export function setConfiguratorQueryContext() {
   analogInfoQueryContext.set(new AnalogInfoQuery())
   calibrationQueryContext.set(new CalibrationQuery())
   optionsQueryContext.set(new OptionsQuery())
-  inUseQueryContext.set(new InUseQuery())
   keymapQueryContext.set(new KeymapQuery())
   actuationQueryContext.set(new ActuationQuery())
   advancedKeysQueryContext.set(new AdvancedKeysQuery())
@@ -70,4 +69,6 @@ export function setConfiguratorQueryContext() {
   rgbQueryContext.set(new RgbQuery())
   // Profile query depends on all other queries.
   profileQueryContext.set(new ProfileQuery())
+  // Reads the keymap, advanced key and profile queries again after a removal
+  inUseQueryContext.set(new InUseQuery())
 }
